@@ -8,38 +8,46 @@ const fs = require('fs');
 const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const TOOLS = require('./tools-data.js');
-const BASE = 'https://pdfstow.safwan.digital';
+const BASE = 'https://pdfstow.com';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const escA = s => esc(s).replace(/"/g, '&quot;');
 const ldjson = obj => JSON.stringify(obj).replace(/<\//g, '<\\/');
 
-/* ---- slice index.html into reusable chrome ---- */
+/* ---- slice index.html into reusable chrome ----
+   Anchored on content, NOT line numbers (v4.7.10): the old fixed-line
+   slices silently truncated the head mid-comment after v4.7.5 added
+   head lines, shipping duplicate <body> tags and visible comment text
+   on every generated page. Anchors + hard throws prevent a repeat:
+   if index.html's structure changes, generation stops loudly. */
 const idx = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').split('\n');
-const L = n => idx[n - 1]; // 1-based
-console.assert(L(39).startsWith('<body>'), 'body line');
-console.assert(L(96).startsWith('<header'), 'header line');
-console.assert(L(114).includes('id="toolView"'), 'toolView line');
-console.assert(L(177).startsWith('<footer>'), 'footer line');
-const headTpl = idx.slice(0, 38).join('\n');            // doctype .. </head>
-const sprite = idx.slice(39, 95).join('\n');            // lines 40..95
-const header = idx.slice(95, 100).join('\n');           // lines 96..100
-const toolView = idx.slice(113, 175).join('\n');        // lines 114..175
-const footer = idx.slice(176, 182).join('\n');          // lines 177..182
-const toast = L(183);
+const findA = (pred, what) => { const i = idx.findIndex(pred); if (i < 0) throw new Error('generate: anchor not found: ' + what); return i; };
+const headEnd = findA(l => l.trim() === '</head>', 'head end');
+const bodyIdx = findA(l => l.startsWith('<body>'), 'body');
+const headerStart = findA(l => l.startsWith('<header'), 'header start');
+const headerEnd = findA(l => l.trim() === '</header>', 'header end');
+const toolViewStart = findA(l => l.includes('id="toolView"'), 'toolView');
+const footerStart = findA(l => l.startsWith('<footer>'), 'footer start');
+const footerEnd = findA(l => l.trim() === '</footer>', 'footer end');
+const headTpl = idx.slice(0, headEnd + 1).join('\n');            // doctype .. </head>
+const sprite = idx.slice(bodyIdx + 1, headerStart).join('\n');  // svg sprite block
+const header = idx.slice(headerStart, headerEnd + 1).join('\n');
+const toolView = idx.slice(toolViewStart, footerStart - 1).join('\n'); // toolView .. </section> (before </main>)
+const footer = idx.slice(footerStart, footerEnd + 1).join('\n');
+const toast = idx[footerEnd + 1];
 
 function subHead(html, { title, desc, url, bodyAttr, jsonld }) {
   let h = html;
   h = h.replace(/<title>.*?<\/title>/, `<title>${esc(title)}</title>`);
   h = h.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${escA(desc)}">`);
-  h = h.replace('<link rel="canonical" href="https://pdfstow.safwan.digital/">', `<link rel="canonical" href="${url}">`);
+  h = h.replace('<link rel="canonical" href="https://pdfstow.com/">', `<link rel="canonical" href="${url}">`);
   h = h.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${escA(title)}">`);
   h = h.replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${escA(desc)}">`);
-  h = h.replace('<meta property="og:url" content="https://pdfstow.safwan.digital/">', `<meta property="og:url" content="${url}">`);
+  h = h.replace('<meta property="og:url" content="https://pdfstow.com/">', `<meta property="og:url" content="${url}">`);
   h = h.replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${escA(title)}">`);
   h = h.replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${escA(desc)}">`);
   h = h.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
   if (jsonld) h = h.replace('<!-- The manifest link', `<script type="application/ld+json">\n${jsonld}\n</script>\n<!-- The manifest link`);
-  h = h.replace('href="styles.css?v=55"', 'href="/styles.css?v=55"');
+  h = h.replace('href="styles.css?v=69"', 'href="/styles.css?v=69"');
   h = h.replace('href="favicon.ico"', 'href="/favicon.ico"');
   h = h.replace('href="favicon-32.png"', 'href="/favicon-32.png"');
   h = h.replace('href="apple-touch-icon.png"', 'href="/apple-touch-icon.png"');
@@ -68,6 +76,7 @@ for (const t of TOOLS) {
   const steps = t.steps.map(s => `      <li>${esc(s)}</li>`).join('\n');
   const know = t.know.map(s => `      <li>${esc(s)}</li>`).join('\n');
   const faqs = t.faqs.map(f => `    <div class="faqitem"><h3>${esc(f.q)}</h3><p>${esc(f.a)}</p></div>`).join('\n');
+  const mid = (t.mid || []).map(s => `  <section class="seo glass">\n    <h2>${esc(s.h)}</h2>\n${s.ps.map(p => `    <p>${esc(p)}</p>`).join('\n')}\n  </section>`).join('\n');
   const rel = t.related.map(s => `<a href="/${s}/">${esc(nameOf(s))}</a>`).join('');
   const main = `<main class="wrap">
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span class="sep" aria-hidden="true">/</span> <span>${esc(t.h1)}</span></nav>
@@ -81,7 +90,7 @@ ${toolView.replace('<section id="toolView" class="hidden">', '<section id="toolV
     <p id="searchMeta" class="hidden"></p>
     <div id="tools"></div>
   </section>
-  <section class="seo glass">
+${mid ? mid + '\n' : ''}  <section class="seo glass">
     <h2>${esc(t.howName)}</h2>
     <ol>
 ${steps}
@@ -103,7 +112,7 @@ ${faqs}
     <div class="relrow">${rel}</div>
   </section>
 </main>`;
-  const page = [head, `<body data-tool="${t.id}">`, sprite, subHeader, main, footer, toast, '<script src="/app.js?v=55" defer></script>', '</body></html>', ''].join('\n');
+  const page = [head, `<body data-tool="${t.id}">`, sprite, subHeader, main, footer, toast, '<script src="/app.js?v=67" defer></script><script src="/demo.js?v=5" defer></script>', '</body></html>', ''].join('\n');
   const dir = path.join(ROOT, t.slug);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), page);
@@ -147,7 +156,7 @@ function trustHead(title, desc, slug) {
 ${ldjson({ '@context': 'https://schema.org', '@type': 'WebPage', name: title, description: desc, url: `${BASE}/${slug}/`, isPartOf: { '@type': 'WebSite', name: 'PDFStow', url: BASE + '/' }, publisher: { '@type': 'Organization', name: 'Safwan.Digital', url: 'https://safwan.digital', logo: `${BASE}/icon-512.png` } })}
 </script>
 <script>try{if(/^https?:$/.test(location.protocol)&&/\\/index\\.html$/.test(location.pathname)){history.replaceState(null,'',location.pathname.replace(/\\/index\\.html$/,'/')+location.search+location.hash)}}catch(e){}try{localStorage.removeItem('aurelia-palette');var _t=localStorage.getItem('aurelia-theme');if(_t==='dark'||(_t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.dataset.theme='dark'}catch(e){}</script>
-<link rel="stylesheet" href="/styles.css?v=55">
+<link rel="stylesheet" href="/styles.css?v=69">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -199,16 +208,30 @@ const SECTIONS = {
     </section>`,
   contact: `<section class="glass" id="contact">
       <h1>Contact</h1>
-      <p>Questions, feedback, or a bug to report? Reach out on Instagram, or open an issue on GitHub — where you can also read every line of code and suggest a tool:</p>
+      <p>Questions, feedback, or a bug to report? Email us at <a href="mailto:info@safwan.digital">info@safwan.digital</a>, reach out on Instagram, or open an issue on GitHub — where you can also read every line of code and suggest a tool:</p>
       <p><a href="https://www.instagram.com/safwan.digital" target="_blank" rel="noopener">@safwan.digital on Instagram</a></p>
       <p><a href="https://github.com/safwan-digital/pdfstow" target="_blank" rel="noopener">PDFStow on GitHub</a></p>
+      <h2>Send a message</h2>
+      <form id="contactForm" action="https://formsubmit.co/info@safwan.digital" method="POST">
+        <input type="hidden" name="_subject" value="New message from the pdfstow.com contact form">
+        <input type="hidden" name="_next" value="https://pdfstow.com/contact/?sent=1">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="text" name="_honey" style="display:none">
+        <p><label>Your name<br><input name="name" type="text" autocomplete="name" style="width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1px solid var(--stroke);background:var(--glass2);color:var(--ink)"></label></p>
+        <p><label>Your email<br><input name="email" type="email" required autocomplete="email" style="width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1px solid var(--stroke);background:var(--glass2);color:var(--ink)"></label></p>
+        <p><label>Subject<br><input name="subject" type="text" required style="width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1px solid var(--stroke);background:var(--glass2);color:var(--ink)"></label></p>
+        <p><label>Message<br><textarea name="message" rows="5" required style="width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1px solid var(--stroke);background:var(--glass2);color:var(--ink)"></textarea></label></p>
+        <p><button class="btn primary" type="submit">Send message</button> <button class="btn" type="button" id="copyEmailBtn">Copy our email address</button></p>
+        <p id="contactNote">Your message is delivered straight to our inbox by a form service (FormSubmit) — it is not stored on this site. Prefer your own email app? Write to info@safwan.digital.</p>
+      </form>
+      <script>(function(){var note=document.getElementById('contactNote');var copyBtn=document.getElementById('copyEmailBtn');copyBtn.addEventListener('click',function(){var done=function(){copyBtn.textContent='Copied — info@safwan.digital';};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText('info@safwan.digital').then(done,done);}else{done();}});if(/[?&]sent=1/.test(location.search)){note.textContent='Thank you — your message has been sent. We read everything and usually reply within a couple of days.';}})();</script>
     </section>`
 };
 const TRUST_PAGES = [
   { slug: 'about', title: 'About PDFStow — Free PDF Tools That Run in Your Browser', desc: 'PDFStow is a free set of 31 PDF tools that runs entirely in your browser — no uploads, no account. Made by Safwan Digital. Here is how it works.', sections: ['about'] },
   { slug: 'privacy', title: 'PDFStow Privacy — Your Files Never Leave Your Device', desc: 'Your files are never uploaded: every PDFStow tool runs 100% in your browser. What the hosting, library and analytics services can see, in plain words.', sections: ['privacy'] },
   { slug: 'terms', title: 'Terms of Use — PDFStow', desc: 'The simple terms for using PDFStow\u2019s free tools: free for personal and business use, only change documents you own, and keep your own copies.', sections: ['terms'] },
-  { slug: 'contact', title: 'Contact — PDFStow', desc: 'Questions, feedback or a bug to report? Reach PDFStow on Instagram at @safwan.digital, or open an issue on GitHub — the full source code is public.', sections: ['contact'] }
+  { slug: 'contact', title: 'Contact — PDFStow', desc: 'Questions, feedback or a bug to report? Email PDFStow at info@safwan.digital, reach out on Instagram at @safwan.digital, or open an issue on GitHub — the full source code is public.', sections: ['contact'] }
 ];
 for (const p of TRUST_PAGES) {
   const body = p.sections.map(s => SECTIONS[s]).join('\n    ');
@@ -284,12 +307,12 @@ console.log('sitemap URLs:', urls.length);
 
 /* ---- llms.txt (draft adapted to the final structure) ---- */
 let llms = fs.readFileSync(path.join(ROOT, 'seo-drafts', 'llms.txt'), 'utf8');
-llms = llms.replace('- [All PDFStow tools](https://pdfstow.safwan.digital/tools/): The full list of 31 tools.',
-  '- [All PDFStow tools](https://pdfstow.safwan.digital/): The home page lists all 31 tools, with search.');
-llms = llms.replace('- [About, Privacy and Terms](https://pdfstow.safwan.digital/trust/): How PDFStow works, why files are never uploaded, and the terms of use. PDFStow is made by Safwan Digital (safwan.digital). Contact: Instagram @safwan.digital or the GitHub repo.',
-  '- [About PDFStow](https://pdfstow.safwan.digital/about/): What PDFStow is and how it works. PDFStow is made by Safwan Digital (safwan.digital).\n- [Privacy](https://pdfstow.safwan.digital/privacy/): Why files are never uploaded, and what hosting, library and analytics services can see.\n- [Terms](https://pdfstow.safwan.digital/terms/): The simple terms of use.\n- [Contact](https://pdfstow.safwan.digital/contact/): Instagram @safwan.digital or the GitHub repo.');
-llms = llms.replace('- [Text to PDF](https://pdfstow.safwan.digital/text-to-pdf/): Turn plain text into a clean PDF.',
-  '- [PDF Editor](https://pdfstow.safwan.digital/pdf-editor/): Edit the words in a PDF line by line, add text, images and a signature — all in one place.');
+llms = llms.replace('- [All PDFStow tools](https://pdfstow.com/tools/): The full list of 31 tools.',
+  '- [All PDFStow tools](https://pdfstow.com/): The home page lists all 31 tools, with search.');
+llms = llms.replace('- [About, Privacy and Terms](https://pdfstow.com/trust/): How PDFStow works, why files are never uploaded, and the terms of use. PDFStow is made by Safwan Digital (safwan.digital). Contact: Instagram @safwan.digital or the GitHub repo.',
+  '- [About PDFStow](https://pdfstow.com/about/): What PDFStow is and how it works. PDFStow is made by Safwan Digital (safwan.digital).\n- [Privacy](https://pdfstow.com/privacy/): Why files are never uploaded, and what hosting, library and analytics services can see.\n- [Terms](https://pdfstow.com/terms/): The simple terms of use.\n- [Contact](https://pdfstow.com/contact/): Email info@safwan.digital, Instagram @safwan.digital or the GitHub repo.');
+llms = llms.replace('- [Text to PDF](https://pdfstow.com/text-to-pdf/): Turn plain text into a clean PDF.',
+  '- [PDF Editor](https://pdfstow.com/pdf-editor/): Edit the words in a PDF line by line, add text, images and a signature — all in one place.');
 llms = llms.replace('https://github.com/safwan-digital/aurelia-pdf', 'https://github.com/safwan-digital/pdfstow');
 fs.writeFileSync(path.join(ROOT, 'llms.txt'), llms);
 console.log('llms.txt written');

@@ -201,3 +201,5 @@
 .demo-meta-row b{font-weight:700;text-align:right}
 .demo-cmp{display:flex;gap:12px;justify-content:center;margin-top:12px}
 @media (max-width:560px){.demo-thumbs{grid-template-columns:repeat(3,1fr)}.demo-posrow{flex-direction:column}.demo-cmp .demo-page-sm{width:128px}}
+
+.wm-preview{margin:14px 0 4px}.wm-preview img{width:100%;max-width:430px;height:auto;display:block;border-radius:var(--r-md);border:1px solid var(--stroke);box-shadow:var(--shadow)}.wm-preview figcaption{margin-top:8px;color:var(--muted);font-size:var(--fs-2)}
