@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.pdfstow.app",
+      "sha256_cert_fingerprints": [
+        "D6:14:40:BE:F4:9A:7C:34:74:ED:5F:01:6A:85:AA:6C:96:46:19:69:4F:25:2E:E3:38:9E:22:BE:08:C1:2B:AF"
+      ]
+    }
+  }
+]
