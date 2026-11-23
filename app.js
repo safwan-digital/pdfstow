@@ -70,6 +70,38 @@ function startAnalytics(){
     window.dataLayer.push({'gtm.start':new Date().getTime(),event:'gtm.js'});
     add('https://www.googletagmanager.com/gtm.js?id=GTM-MDP3TXXV');
     add('https://www.clarity.ms/tag/zf09zdj8dk');
+    tagAppMode();
+  }catch(e){}
+}
+/* App-mode marker (v4.7.27): label every analytics session as
+   'installed' when the site runs as an installed app (Microsoft Store
+   app, installed PWA, home-screen app) or 'browser' otherwise, so
+   Store-app usage can be told apart from website visits in both GA4
+   (user property app_mode) and Microsoft Clarity (custom tag
+   app_mode). Detection uses the standard display-mode signals; the
+   label is applied with a bounded retry because GTM's Google tag and
+   the Clarity tag finish loading after this script injects them. No
+   files or file contents are involved — same promise as all analytics
+   here. */
+function tagAppMode(){
+  try{
+    let installed=false;
+    try{
+      installed=!!((window.matchMedia&&((matchMedia('(display-mode: standalone)').matches)||(matchMedia('(display-mode: window-controls-overlay)').matches)))||navigator.standalone===true||(document.referrer&&document.referrer.indexOf('android-app://')===0));
+    }catch(e){}
+    const mode=installed?'installed':'browser';
+    try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'app_mode',app_mode:mode});}catch(e){}
+    let tries=0,clarityDone=false,gtagDone=false;
+    const timer=setInterval(()=>{
+      tries++;
+      try{
+        if(!clarityDone&&typeof window.clarity==='function'){window.clarity('set','app_mode',mode);clarityDone=true;}
+      }catch(e){clarityDone=true;}
+      try{
+        if(!gtagDone&&typeof window.gtag==='function'){window.gtag('set','user_properties',{app_mode:mode});gtagDone=true;}
+      }catch(e){gtagDone=true;}
+      if((clarityDone&&gtagDone)||tries>=20)clearInterval(timer);
+    },500);
   }catch(e){}
 }
 /* Error tracking (v4.7.6): Sentry, errors only — no session replay,
