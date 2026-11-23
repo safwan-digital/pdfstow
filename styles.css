@@ -208,3 +208,14 @@
 .scan-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
 .scan-actions .pm-hint{flex-basis:100%;margin:2px 0 0}
 .scan-actions label.btn{cursor:pointer}
+
+/* v4.7.31 — footer tidy: even, centered link rows; store badges on their own centered row, clear of the text links. */
+.footnav{gap:10px 26px;margin:16px auto 2px;max-width:760px}
+.footnav a{padding:4px 2px}
+.storebadges{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:14px 18px;margin:22px 0 4px}
+.storebadges .msb-light{display:none}
+[data-theme=dark] .storebadges .msb-dark{display:none}
+[data-theme=dark] .storebadges .msb-light{display:block}
+.storebadges a{display:block;line-height:0}
+.storebadges img{display:block;height:44px;width:auto;max-width:220px}
+@media (max-width:560px){.storebadges{flex-direction:column;gap:12px}}
