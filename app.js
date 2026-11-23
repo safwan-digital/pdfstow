@@ -98,6 +98,11 @@ function startErrorTracking(){
           tracesSampleRate:0,
           beforeSend(event){
             try{
+              /* v4.7.25: drop errors that live entirely inside Microsoft
+                 Clarity's own tag (e.g. PDFSTOW-2) — not our code, and
+                 Safwan only wants alerts about real PDFStow errors. */
+              const vals=(event.exception&&event.exception.values)||[];
+              for(const v of vals){const fr=(v.stacktrace&&v.stacktrace.frames)||[];if(fr.length&&fr.every(f=>String(f.filename||f.abs_path||'').indexOf('clarity.ms')>=0))return null;}
               if(event.request){delete event.request.headers;if(event.request.url)event.request.url=event.request.url.split('?')[0];}
               delete event.user;
               if(event.breadcrumbs)event.breadcrumbs=event.breadcrumbs.map(b=>({timestamp:b.timestamp,type:b.type,level:b.level,category:b.category}));
