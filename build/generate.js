@@ -1,5 +1,5 @@
 /* PDFStow v4.7.4 page generator.
-   Builds the 31 per-tool pages, the 4 trust pages, the trust.html stub,
+   Builds the 32 per-tool pages, the 4 trust pages, the trust.html stub,
    sitemap.xml and llms.txt from index.html's own chrome (head / sprite /
    header / toolView / footer) + build/tools-data.js copy.
    Run: node build/generate.js   (idempotent) */
@@ -60,7 +60,7 @@ const subHeader = header
 
 /* ---- tool pages ---- */
 /* Lucide icon per tool (mirrors app.js TOOLS) for the tool-page H1 chip. */
-const ICONS = { 'merge': 'combine', 'split': 'scissors', 'remove-pages': 'file-x-2', 'extract-pages': 'file-output', 'organize': 'layers', 'rotate': 'rotate-cw', 'crop': 'crop', 'compress': 'minimize-2', 'repair': 'wrench', 'ocr': 'scan-text', 'images-to-pdf': 'images', 'html-to-pdf': 'globe', 'word-to-pdf': 'file-type-2', 'pdf-to-jpg': 'image', 'pdf-to-png': 'image-down', 'pdf-to-text': 'align-left', 'pdf-to-word': 'file-text', 'pdf-to-excel': 'table-2', 'pdf-to-markdown': 'file-code-2', 'pdf-editor': 'pencil', 'edit-pdf': 'pen-line', 'annotate': 'sticky-note', 'page-numbers': 'hash', 'watermark': 'stamp', 'sign-pdf': 'signature', 'redact': 'eye-off', 'protect': 'lock', 'unlock': 'lock-open', 'metadata': 'tags', 'compare': 'git-compare-arrows', 'summarize': 'sparkles' };
+const ICONS = { 'scan': 'scan', 'merge': 'combine', 'split': 'scissors', 'remove-pages': 'file-x-2', 'extract-pages': 'file-output', 'organize': 'layers', 'rotate': 'rotate-cw', 'crop': 'crop', 'compress': 'minimize-2', 'repair': 'wrench', 'ocr': 'scan-text', 'images-to-pdf': 'images', 'html-to-pdf': 'globe', 'word-to-pdf': 'file-type-2', 'pdf-to-jpg': 'image', 'pdf-to-png': 'image-down', 'pdf-to-text': 'align-left', 'pdf-to-word': 'file-text', 'pdf-to-excel': 'table-2', 'pdf-to-markdown': 'file-code-2', 'pdf-editor': 'pencil', 'edit-pdf': 'pen-line', 'annotate': 'sticky-note', 'page-numbers': 'hash', 'watermark': 'stamp', 'sign-pdf': 'signature', 'redact': 'eye-off', 'protect': 'lock', 'unlock': 'lock-open', 'metadata': 'tags', 'compare': 'git-compare-arrows', 'summarize': 'sparkles' };
 const bySlug = Object.fromEntries(TOOLS.map(t => [t.slug, t]));
 const nameOf = slug => bySlug[slug].h1;
 let made = 0;
@@ -112,7 +112,7 @@ ${faqs}
     <div class="relrow">${rel}</div>
   </section>
 </main>`;
-  const page = [head, `<body data-tool="${t.id}">`, sprite, subHeader, main, footer, toast, '<script src="/app.js?v=67" defer></script><script src="/demo.js?v=5" defer></script>', '</body></html>', ''].join('\n');
+  const page = [head, `<body data-tool="${t.id}">`, sprite, subHeader, main, footer, toast, '<script src="/app.js?v=70" defer></script><script src="/demo.js?v=5" defer></script>', '</body></html>', ''].join('\n');
   const dir = path.join(ROOT, t.slug);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), page);
@@ -174,7 +174,7 @@ const trustThemeScript = `<script>
 const SECTIONS = {
   about: `<section class="glass" id="about">
       <h1>About PDFStow</h1>
-      <p>PDFStow is a free set of 31 PDF tools — merge, split, compress, convert, edit, sign, protect and more — that runs entirely in your web browser. It is made by <strong>Safwan Digital</strong>.</p>
+      <p>PDFStow is a free set of 32 PDF tools — merge, split, compress, convert, edit, sign, protect and more — that runs entirely in your web browser. It is made by <strong>Safwan Digital</strong>.</p>
       <p>There is no account to create and nothing to install. You open a tool, pick your file, and download the result.</p>
       <p>PDFStow is built and run by <a href="https://safwan.digital" target="_blank" rel="noopener">Safwan.Digital</a>.</p>
     </section>
@@ -212,23 +212,19 @@ const SECTIONS = {
       <p><a href="https://www.instagram.com/safwan.digital" target="_blank" rel="noopener">@safwan.digital on Instagram</a></p>
       <p><a href="https://github.com/safwan-digital/pdfstow" target="_blank" rel="noopener">PDFStow on GitHub</a></p>
       <h2>Send a message</h2>
-      <form id="contactForm" action="https://formsubmit.co/info@safwan.digital" method="POST">
-        <input type="hidden" name="_subject" value="New message from the pdfstow.com contact form">
-        <input type="hidden" name="_next" value="https://pdfstow.com/contact/?sent=1">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="text" name="_honey" style="display:none">
+      <form id="contactForm">
         <p><label>Your name<br><input name="name" type="text" autocomplete="name" style="width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1px solid var(--stroke);background:var(--glass2);color:var(--ink)"></label></p>
         <p><label>Your email<br><input name="email" type="email" required autocomplete="email" style="width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1px solid var(--stroke);background:var(--glass2);color:var(--ink)"></label></p>
         <p><label>Subject<br><input name="subject" type="text" required style="width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1px solid var(--stroke);background:var(--glass2);color:var(--ink)"></label></p>
         <p><label>Message<br><textarea name="message" rows="5" required style="width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1px solid var(--stroke);background:var(--glass2);color:var(--ink)"></textarea></label></p>
         <p><button class="btn primary" type="submit">Send message</button> <button class="btn" type="button" id="copyEmailBtn">Copy our email address</button></p>
-        <p id="contactNote">Your message is delivered straight to our inbox by a form service (FormSubmit) — it is not stored on this site. Prefer your own email app? Write to info@safwan.digital.</p>
+        <p id="contactNote">How this works: pressing Send message opens your own email app with your message filled in, addressed to us — you press Send there. Nothing is stored on this site, and no form service is involved.</p>
       </form>
-      <script>(function(){var note=document.getElementById('contactNote');var copyBtn=document.getElementById('copyEmailBtn');copyBtn.addEventListener('click',function(){var done=function(){copyBtn.textContent='Copied — info@safwan.digital';};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText('info@safwan.digital').then(done,done);}else{done();}});if(/[?&]sent=1/.test(location.search)){note.textContent='Thank you — your message has been sent. We read everything and usually reply within a couple of days.';}})();</script>
+      <script>(function(){var form=document.getElementById('contactForm');var note=document.getElementById('contactNote');var copyBtn=document.getElementById('copyEmailBtn');copyBtn.addEventListener('click',function(){var done=function(){copyBtn.textContent='Copied — info@safwan.digital';};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText('info@safwan.digital').then(done,done);}else{done();}});form.addEventListener('submit',function(e){e.preventDefault();var v=function(n){var el=form.elements.namedItem(n);return el?el.value.trim():'';};var subject=v('subject')||'Message from the pdfstow.com contact form';var body='Name: '+(v('name')||'-')+'\\nEmail: '+v('email')+'\\n\\n'+v('message');note.textContent='Your email app should now open with your message ready — press Send there to finish. If nothing opened, use the Copy button and write to info@safwan.digital.';window.location.href='mailto:info@safwan.digital?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);});})();</script>
     </section>`
 };
 const TRUST_PAGES = [
-  { slug: 'about', title: 'About PDFStow — Free PDF Tools That Run in Your Browser', desc: 'PDFStow is a free set of 31 PDF tools that runs entirely in your browser — no uploads, no account. Made by Safwan Digital. Here is how it works.', sections: ['about'] },
+  { slug: 'about', title: 'About PDFStow — Free PDF Tools That Run in Your Browser', desc: 'PDFStow is a free set of 32 PDF tools that runs entirely in your browser — no uploads, no account. Made by Safwan Digital. Here is how it works.', sections: ['about'] },
   { slug: 'privacy', title: 'PDFStow Privacy — Your Files Never Leave Your Device', desc: 'Your files are never uploaded: every PDFStow tool runs 100% in your browser. What the hosting, library and analytics services can see, in plain words.', sections: ['privacy'] },
   { slug: 'terms', title: 'Terms of Use — PDFStow', desc: 'The simple terms for using PDFStow\u2019s free tools: free for personal and business use, only change documents you own, and keep your own copies.', sections: ['terms'] },
   { slug: 'contact', title: 'Contact — PDFStow', desc: 'Questions, feedback or a bug to report? Email PDFStow at info@safwan.digital, reach out on Instagram at @safwan.digital, or open an issue on GitHub — the full source code is public.', sections: ['contact'] }
@@ -293,8 +289,8 @@ fs.writeFileSync(path.join(ROOT, 'text-to-pdf', 'index.html'), `<!doctype html>
 `);
 console.log('text-to-pdf stub written');
 
-/* ---- sitemap.xml (36 URLs) ---- */
-const ORDER = ['merge-pdf', 'compress-pdf', 'jpg-to-pdf', 'pdf-to-word', 'pdf-to-jpg', 'word-to-pdf', 'split-pdf', 'pdf-to-excel', 'sign-pdf', 'ocr-pdf', 'edit-pdf', 'pdf-to-png', 'pdf-to-text', 'rotate-pdf', 'watermark-pdf', 'protect-pdf', 'unlock-pdf', 'remove-pages', 'extract-pages', 'organize-pdf', 'crop-pdf', 'page-numbers', 'annotate-pdf', 'html-to-pdf', 'pdf-editor', 'pdf-metadata', 'repair-pdf', 'compare-pdf', 'pdf-to-markdown', 'summarize-pdf', 'redact-pdf'];
+/* ---- sitemap.xml (37 URLs) ---- */
+const ORDER = ['scan-pdf','merge-pdf', 'compress-pdf', 'jpg-to-pdf', 'pdf-to-word', 'pdf-to-jpg', 'word-to-pdf', 'split-pdf', 'pdf-to-excel', 'sign-pdf', 'ocr-pdf', 'edit-pdf', 'pdf-to-png', 'pdf-to-text', 'rotate-pdf', 'watermark-pdf', 'protect-pdf', 'unlock-pdf', 'remove-pages', 'extract-pages', 'organize-pdf', 'crop-pdf', 'page-numbers', 'annotate-pdf', 'html-to-pdf', 'pdf-editor', 'pdf-metadata', 'repair-pdf', 'compare-pdf', 'pdf-to-markdown', 'summarize-pdf', 'redact-pdf'];
 const TOP = new Set(ORDER.slice(0, 10));
 const urls = [{ loc: BASE + '/', pr: '1.0', cf: 'weekly' }]
   .concat(ORDER.map(s => ({ loc: `${BASE}/${s}/`, pr: TOP.has(s) ? '0.9' : '0.8', cf: 'weekly' })))
@@ -307,8 +303,8 @@ console.log('sitemap URLs:', urls.length);
 
 /* ---- llms.txt (draft adapted to the final structure) ---- */
 let llms = fs.readFileSync(path.join(ROOT, 'seo-drafts', 'llms.txt'), 'utf8');
-llms = llms.replace('- [All PDFStow tools](https://pdfstow.com/tools/): The full list of 31 tools.',
-  '- [All PDFStow tools](https://pdfstow.com/): The home page lists all 31 tools, with search.');
+llms = llms.replace('- [All PDFStow tools](https://pdfstow.com/tools/): The full list of 32 tools.',
+  '- [All PDFStow tools](https://pdfstow.com/): The home page lists all 32 tools, with search.');
 llms = llms.replace('- [About, Privacy and Terms](https://pdfstow.com/trust/): How PDFStow works, why files are never uploaded, and the terms of use. PDFStow is made by Safwan Digital (safwan.digital). Contact: Instagram @safwan.digital or the GitHub repo.',
   '- [About PDFStow](https://pdfstow.com/about/): What PDFStow is and how it works. PDFStow is made by Safwan Digital (safwan.digital).\n- [Privacy](https://pdfstow.com/privacy/): Why files are never uploaded, and what hosting, library and analytics services can see.\n- [Terms](https://pdfstow.com/terms/): The simple terms of use.\n- [Contact](https://pdfstow.com/contact/): Email info@safwan.digital, Instagram @safwan.digital or the GitHub repo.');
 llms = llms.replace('- [Text to PDF](https://pdfstow.com/text-to-pdf/): Turn plain text into a clean PDF.',

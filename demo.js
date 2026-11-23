@@ -80,7 +80,7 @@
     ]
   };
 
-  /* ================= Data for the other 30 tools =================
+  /* ================= Data for the other 31 tools =================
      files: [name, meta] rows for scene 1 · mid: scene-2 renderer key
      action/verb: scene 3 · out: [name, meta] result cards for scene 4 */
   var T = {
@@ -111,6 +111,9 @@
     'ocr': { name: 'OCR PDF', files: [['scan.pdf', '5 pages']], mid: 'scan', action: 'OCR PDF', verb: 'Reading text…',
       out: [['scan-searchable.pdf', 'searchable text']],
       caps: ['Add a scanned PDF', 'The text is read page by page — English only', 'One click — reading happens on your device', 'A searchable PDF, plus the plain text'] },
+    'scan': { name: 'Scan to PDF', files: [['page1.jpg', 'photo of page 1'], ['page2.jpg', 'photo of page 2']], mid: 'scan', action: 'Make PDF', verb: 'Building\u2026',
+      out: [['scan.pdf', '2 pages']],
+      caps: ['Take a photo of each paper page', 'Cleaned up — black & white document look', 'One click — it all happens on your device', 'One clean PDF, ready to download'] },
     'images-to-pdf': { name: 'Images to PDF', title: 'JPG to PDF', files: [['photo1.jpg', 'JPG image'], ['photo2.png', 'PNG image']], mid: 'images', action: 'Images to PDF', verb: 'Building…',
       out: [['images.pdf', '2 pages']],
       caps: ['Add your JPG or PNG images', 'Put them in the order you want', 'One click — they become one polished PDF', 'Your PDF, ready to download'] },
@@ -361,7 +364,7 @@
     'merge-pdf': 'merge', 'split-pdf': 'split', 'remove-pages': 'remove-pages',
     'extract-pages': 'extract-pages', 'organize-pdf': 'organize', 'rotate-pdf': 'rotate',
     'crop-pdf': 'crop', 'compress-pdf': 'compress', 'repair-pdf': 'repair', 'ocr-pdf': 'ocr',
-    'jpg-to-pdf': 'images-to-pdf', 'html-to-pdf': 'html-to-pdf', 'word-to-pdf': 'word-to-pdf',
+    'scan-pdf': 'scan', 'jpg-to-pdf': 'images-to-pdf', 'html-to-pdf': 'html-to-pdf', 'word-to-pdf': 'word-to-pdf',
     'pdf-to-jpg': 'pdf-to-jpg', 'pdf-to-png': 'pdf-to-png', 'pdf-to-text': 'pdf-to-text',
     'pdf-to-word': 'pdf-to-word', 'pdf-to-excel': 'pdf-to-excel', 'pdf-to-markdown': 'pdf-to-markdown',
     'pdf-editor': 'pdf-editor', 'edit-pdf': 'edit-pdf', 'annotate-pdf': 'annotate',

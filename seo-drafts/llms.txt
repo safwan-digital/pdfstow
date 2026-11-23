@@ -1,0 +1,72 @@
+# PDFStow
+
+> PDFStow is a free set of 32 PDF tools that runs entirely in your web browser. Your files are never uploaded — every tool works on your own device. No sign-up, no install, no watermark. PDFStow is made by Safwan Digital.
+
+Key facts:
+- Price: free. All 32 tools, no paid tier.
+- Privacy: files are processed 100% in the browser and never leave the user's device. There is no server upload, no account, and no file storage.
+- Works on phone, tablet and desktop in a modern web browser. English only.
+- Source code is public on GitHub, so the no-upload claim can be checked by anyone.
+
+## Organize a PDF
+
+- [Merge PDF](https://pdfstow.com/merge-pdf/): Combine several PDF files into one, in the order you choose.
+- [Split PDF](https://pdfstow.com/split-pdf/): Split a PDF by page ranges or into single pages.
+- [Remove Pages](https://pdfstow.com/remove-pages/): Delete pages you do not need from a PDF.
+- [Extract Pages](https://pdfstow.com/extract-pages/): Pull chosen pages out into a new PDF.
+- [Organize PDF](https://pdfstow.com/organize-pdf/): Reorder, rotate and delete pages in one view.
+- [Rotate PDF](https://pdfstow.com/rotate-pdf/): Turn pages 90, 180 or 270 degrees and save them that way.
+- [Crop PDF](https://pdfstow.com/crop-pdf/): Trim the margins or a chosen area from PDF pages.
+
+## Make a PDF
+
+- [Scan to PDF](https://pdfstow.com/scan-pdf/): Scan paper pages with your phone camera and turn them into one clean PDF.
+- [JPG to PDF](https://pdfstow.com/jpg-to-pdf/): Turn JPG, PNG and other images into one PDF.
+- [Word to PDF](https://pdfstow.com/word-to-pdf/): Convert a Word document (.docx) into a PDF.
+- [Text to PDF](https://pdfstow.com/text-to-pdf/): Turn plain text into a clean PDF.
+- [HTML to PDF](https://pdfstow.com/html-to-pdf/): Save HTML content as a PDF.
+
+## Convert a PDF to something else
+
+- [PDF to JPG](https://pdfstow.com/pdf-to-jpg/): Turn every PDF page into a JPG image.
+- [PDF to PNG](https://pdfstow.com/pdf-to-png/): Turn every PDF page into a PNG image.
+- [PDF to Text](https://pdfstow.com/pdf-to-text/): Pull the text out of a PDF into a text file.
+- [PDF to Word](https://pdfstow.com/pdf-to-word/): Convert a PDF into an editable Word document (text-based).
+- [PDF to Excel](https://pdfstow.com/pdf-to-excel/): Convert PDF tables into an Excel spreadsheet.
+- [PDF to Markdown](https://pdfstow.com/pdf-to-markdown/): Convert a PDF's text into Markdown.
+
+## Make a PDF smaller
+
+- [Compress PDF](https://pdfstow.com/compress-pdf/): Reduce a PDF's file size for email and upload limits. Works best on scanned and photo-heavy PDFs.
+
+## Edit and sign
+
+- [Edit PDF](https://pdfstow.com/edit-pdf/): Add text to a PDF, placed exactly where you want it.
+- [Annotate PDF](https://pdfstow.com/annotate-pdf/): Draw, highlight and add notes on a PDF.
+- [Page Numbers](https://pdfstow.com/page-numbers/): Add page numbers to a PDF.
+- [Watermark PDF](https://pdfstow.com/watermark-pdf/): Stamp a word such as DRAFT across PDF pages.
+- [Sign PDF](https://pdfstow.com/sign-pdf/): Draw, type or upload a signature and place it on a PDF.
+
+## Keep a PDF safe
+
+- [Protect PDF](https://pdfstow.com/protect-pdf/): Add a password to a PDF.
+- [Unlock PDF](https://pdfstow.com/unlock-pdf/): Remove a password you know from your own PDF.
+- [Redact PDF](https://pdfstow.com/redact-pdf/): Permanently black out text and remove it from the file.
+- [PDF Metadata Editor](https://pdfstow.com/pdf-metadata/): View and change a PDF's title, author and other details.
+
+## Smart tools
+
+- [OCR PDF](https://pdfstow.com/ocr-pdf/): Make a scanned PDF searchable by recognizing its text (English).
+- [Repair PDF](https://pdfstow.com/repair-pdf/): Try to rebuild a damaged PDF so it opens again.
+- [Compare PDF](https://pdfstow.com/compare-pdf/): See the text differences between two PDFs.
+- [Summarize PDF](https://pdfstow.com/summarize-pdf/): Get a short summary of a PDF's text.
+
+## About and trust
+
+- [All PDFStow tools](https://pdfstow.com/tools/): The full list of 32 tools.
+- [About, Privacy and Terms](https://pdfstow.com/trust/): How PDFStow works, why files are never uploaded, and the terms of use. PDFStow is made by Safwan Digital (safwan.digital). Contact: Instagram @safwan.digital or the GitHub repo.
+- [Source code on GitHub](https://github.com/safwan-digital/aurelia-pdf): The complete public source code — the no-upload claim can be verified here.
+
+## Optional
+
+- [PDFStow home](https://pdfstow.com/): Start page with search across all 32 tools.

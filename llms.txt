@@ -1,9 +1,9 @@
 # PDFStow
 
-> PDFStow is a free set of 31 PDF tools that runs entirely in your web browser. Your files are never uploaded — every tool works on your own device. No sign-up, no install, no watermark. PDFStow is made by Safwan Digital.
+> PDFStow is a free set of 32 PDF tools that runs entirely in your web browser. Your files are never uploaded — every tool works on your own device. No sign-up, no install, no watermark. PDFStow is made by Safwan Digital.
 
 Key facts:
-- Price: free. All 31 tools, no paid tier.
+- Price: free. All 32 tools, no paid tier.
 - Privacy: files are processed 100% in the browser and never leave the user's device. There is no server upload, no account, and no file storage.
 - Works on phone, tablet and desktop in a modern web browser. English only.
 - Source code is public on GitHub, so the no-upload claim can be checked by anyone.
@@ -20,6 +20,7 @@ Key facts:
 
 ## Make a PDF
 
+- [Scan to PDF](https://pdfstow.com/scan-pdf/): Scan paper pages with your phone camera and turn them into one clean PDF.
 - [JPG to PDF](https://pdfstow.com/jpg-to-pdf/): Turn JPG, PNG and other images into one PDF.
 - [Word to PDF](https://pdfstow.com/word-to-pdf/): Convert a Word document (.docx) into a PDF.
 - [PDF Editor](https://pdfstow.com/pdf-editor/): Edit the words in a PDF line by line, add text, images and a signature — all in one place.
@@ -62,7 +63,7 @@ Key facts:
 
 ## About and trust
 
-- [All PDFStow tools](https://pdfstow.com/): The home page lists all 31 tools, with search.
+- [All PDFStow tools](https://pdfstow.com/): The home page lists all 32 tools, with search.
 - [About PDFStow](https://pdfstow.com/about/): What PDFStow is and how it works. PDFStow is made by Safwan Digital (safwan.digital).
 - [Privacy](https://pdfstow.com/privacy/): Why files are never uploaded, and what hosting, library and analytics services can see.
 - [Terms](https://pdfstow.com/terms/): The simple terms of use.
@@ -71,4 +72,4 @@ Key facts:
 
 ## Optional
 
-- [PDFStow home](https://pdfstow.com/): Start page with search across all 31 tools.
+- [PDFStow home](https://pdfstow.com/): Start page with search across all 32 tools.

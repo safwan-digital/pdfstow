@@ -8,7 +8,7 @@ PDFStow is a complete PDF toolkit in the spirit of the classic online PDF suites
 
 > 🔒 **100% client-side. Your files are never uploaded — everything runs in your browser.** No login, no storage — processing happens entirely on your device. (The honest details — hosting, CDN library loads, the one-time OCR language download — are on the site's Privacy page, `/privacy/`.)
 
-## ✨ 31 working tools
+## ✨ 32 working tools
 
 **Organize:** Merge · Split · Remove Pages · Extract Pages · Organize/Reorder · Rotate · Crop
 **Optimize:** Compress (3 levels) · Repair · OCR (English, in-browser)

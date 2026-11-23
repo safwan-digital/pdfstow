@@ -1,6 +1,6 @@
 /* PDFStow v4.5.0 — per-tool page copy data.
    Pilot 4 (merge, compress, pdf-to-jpg, images-to-pdf) are VERBATIM from
-   seo-drafts/*.md. The other 27 follow the identical standard: plain
+   seo-drafts/*.md. The other 28 follow the identical standard: plain
    words, US spelling, honest limits from each tool's in-app note.
    Fields: id (app tool id), slug (folder), h1, title (<=60), desc (<=155),
    answer (40-60 words), howName (HowTo schema name), steps[3],
@@ -18,7 +18,15 @@ module.exports = [
     {q:'Is it free to merge PDFs here?',a:'Yes. Merging is completely free, with no account, no trial and no watermark on your file.'},
     {q:'Are my files uploaded to a server?',a:'No. The merge happens inside your browser, on your own device. Your files are never sent anywhere, so there is nothing stored or shared.'},
     {q:'Can I change the order before merging?',a:'Yes. After adding your files, drag them into any order. The merged PDF follows exactly the order you set.'},
-    {q:'Will the quality of my PDFs change?',a:'No. Merging joins the pages as they are — text, images and layout stay the same as in your original files.'}],
+    {q:'Will the quality of my PDFs change?',a:'No. Merging joins the pages as they are — text, images and layout stay the same as in your original files.'},
+    {q:'Can I merge a password-protected PDF?',a:'Only if the file can be opened first. A PDF locked with a password that stops it opening needs unlocking before it can be merged — use the Unlock PDF tool on a file you own, then merge the unlocked file.'},
+    {q:'Can I merge PDFs on my phone?',a:'Yes. Tap to add your files, drag them into order, then merge and download — the tool runs in your phone\u2019s browser, with no app and no sign-up. Very large files work best on a computer, so for a big merge use a desktop or laptop if you have one.'}],
+  mid:[
+    {h:'Combine PDF files in the order you choose',ps:['Merging is the simplest way to turn several PDFs into one document. Add the files you want to combine — a cover letter and a CV, the chapters of a report, scanned pages and a typed form — then drag them into the order they should appear in and download a single PDF. The merged file follows exactly the order you set, so check the list once before you press Merge: the first file in the list becomes the first pages of the combined document, and the last file becomes the last pages.']},
+    {h:'What merging does — and what it doesn\u2019t change',ps:['Merging joins pages as they are. Text, images and layout stay the same as in your original files, and there is no watermark added to your document. Merging does not compress your files, change their page size, or rewrite their content — it puts whole pages together in sequence. If you need a smaller file after merging, use Compress PDF next; if you need to change what is on a page, use the PDF Editor instead. Think of Merge PDF as stapling documents together, not retyping them.']},
+    {h:'When to merge, and when to split instead',ps:['Merge when one document should read as one file: a job application with a cover letter, CV and certificates; a report with its appendices; invoices for the same month sent as a single file; or scanned pages that belong together. Split instead when you need the opposite — one long PDF that should become separate files, or a few pages pulled out of a bigger document. If you merged the wrong files, or in the wrong order, just merge again from the originals; the tool never changes your source files, so nothing is lost.']},
+    {h:'Getting the order right',ps:['The order is the whole job, so take a moment on it. Add the files in any order, then drag them up or down until the sequence reads correctly from first page to last. A useful check is to read just the first page of each file in the list: cover first, main content next, supporting documents last. If two files look alike, open each one before you merge — the file names are not always enough to tell them apart. Once the order looks right, merge and download, then open the combined PDF and flick through it before you send it on.']},
+    {h:'Your files stay on your device',ps:['Like every PDFStow tool, Merge PDF runs entirely in your browser. Your files are never uploaded to a server, so there is nothing stored, shared or kept after you close the page — and no account or sign-up is needed to use it. That matters most for the documents people merge every day: applications, contracts, medical forms and financial records. Very large files work best on a computer, where the browser has more room to work. A PDF that is locked with a password that stops it opening needs unlocking first — PDFStow has an Unlock PDF tool for files you own.']}],
   related:['split-pdf','extract-pages','organize-pdf','compress-pdf','sign-pdf'] },
 
 { id:'split', slug:'split-pdf', h1:'Split PDF',
@@ -93,14 +101,14 @@ module.exports = [
 
 { id:'crop', slug:'crop-pdf', h1:'Crop PDF',
   title:'Crop PDF Online Free — Trim Margins, No Upload | PDFStow',
-  desc:'Trim the margins or a chosen area from every page of a PDF. Drag the crop box on the preview. Free, no sign-up, no upload.',
-  answer:'Crop PDF trims the edges of your pages — wide margins, scanner borders or a header you do not need. Drag the crop rectangle on the preview and the same trim is applied to every page. The work happens in your browser, so your file is never uploaded.',
+  desc:'Select the part of each page to keep — drag on the preview to draw the area. Free, no sign-up, no upload.',
+  answer:'Crop PDF cuts your pages down to the part you want to keep — wide margins, scanner borders or a header you do not need. Drag on the preview to draw the area to keep, adjust it from any edge or corner, and the same selection is applied to every page. The work happens in your browser, so your file is never uploaded.',
   howName:'How to crop a PDF',
-  steps:['Open Crop PDF and add your file.','Drag the crop rectangle on the preview until it frames the area to keep; resize it from the corner.','Select Crop PDF, then download the trimmed file.'],
-  know:['The same trim is applied to every page, so this works best when all pages share the same layout.','Fine-tune with exact numbers under Advanced options.'],
+  steps:['Open Crop PDF and add your file.','Drag on the preview to draw the area to keep; drag its edges or corners to adjust it.','Select Crop PDF, then download the cropped file.'],
+  know:['The same selection is applied to every page, so this works best when all pages share the same layout.','Fine-tune with exact numbers under Advanced options.'],
   faqs:[
     {q:'Is it free to crop a PDF here?',a:'Yes — completely free, no account, no watermark.'},
-    {q:'Does cropping delete the trimmed parts?',a:'Cropping sets the visible page area of the saved file. The saved file shows only the framed area when opened.'},
+    {q:'Does cropping delete the trimmed parts?',a:'In the saved file, each page is cut down to the area you framed — the page size itself becomes the framed area, so it shows and prints the same way in every app.'},
     {q:'Can I crop only one page?',a:'The trim applies to all pages in this tool — it is made for documents with the same margins throughout.'},
     {q:'Are my files uploaded?',a:'No. Cropping runs in your browser, on your own device.'}],
   related:['rotate-pdf','organize-pdf','remove-pages','edit-pdf'] },
@@ -146,6 +154,20 @@ module.exports = [
     {q:'Which languages are supported?',a:'English. Other languages are not included, to keep the tool fast and private.'},
     {q:'Why did it find little text?',a:'The page may be blank, very blurry, or handwritten — OCR reads printed text. Try a clearer scan.'}],
   related:['pdf-to-text','summarize-pdf','repair-pdf','compress-pdf'] },
+
+{ id:'scan', slug:'scan-pdf', h1:'Scan to PDF',
+  title:'Scan to PDF Online Free — Phone Camera, No Upload | PDFStow',
+  desc:'Scan paper pages with your phone camera and turn them into one clean PDF. Free, no sign-up, and your photos are never uploaded.',
+  answer:'Scan to PDF turns photos of paper pages into one clean PDF. Take a photo of each page with your phone camera — or add photos you already have — put them in order, and download a single PDF. Everything happens in your browser, so your photos are never uploaded and there is nothing to sign up for.',
+  howName:'How to scan to PDF',
+  steps:['Open Scan to PDF and tap Take a photo — or add photos from your device.','Put the pages in order; rotate any page that came out sideways.','Choose the look — color, grayscale, or black & white — then select Make PDF and download it.'],
+  know:['Black & white mode cleans up shadows and gray paper, so the words read clearly — the classic scanned-document look.','Take each photo in good light, flat over the page, for the clearest result. Very large photos are shrunk to a sensible size, so the finished PDF stays easy to share.'],
+  faqs:[
+    {q:'Is it free to scan to PDF here?',a:'Yes. Scanning is completely free, with no account, no trial and no watermark on your PDF.'},
+    {q:'Are my photos uploaded?',a:'No. Your photos are turned into a PDF inside your browser, on your own device. They are never sent anywhere.'},
+    {q:'Can I scan several pages into one PDF?',a:'Yes. Add one photo per page, put them in order, and they become the pages of a single PDF.'},
+    {q:'Can the text in my scan be searched or copied?',a:'Not from this tool — the pages stay as pictures inside the PDF. Run the finished PDF through OCR PDF to make its text searchable.'}],
+  related:['jpg-to-pdf','ocr-pdf','compress-pdf','merge-pdf'] },
 
 { id:'images-to-pdf', slug:'jpg-to-pdf', h1:'JPG to PDF Converter',
   title:'JPG to PDF Converter Free Online — No Sign-Up | PDFStow',
@@ -279,7 +301,7 @@ module.exports = [
   answer:'PDF Editor changes the words in a PDF and adds new content in one workspace: tap a field to retype it, add text, place an image or logo, sign, highlight, underline, draw shapes, stamp and number the pages — then save once. Tools that other editors charge for, like editing existing text, are free here. Everything runs in your browser, so your document is never uploaded.',
   howName:'How to edit a PDF',
   steps:['Open PDF Editor and add your PDF.','Pick a tool above the page — Edit text, Add text, Add image, Sign, Mark, Shapes, Draw, Cover, Stamps or Find & Replace — and make your changes on the preview.','Select Save edited PDF, then download the finished file.'],
-  know:['Text is edited field by field: on a form or receipt, each value is its own field, and the field you change is covered and re-typed in the closest standard font — the rest of the row is never redrawn. Everything else — headings, logos, letterhead, layout — is untouched.','Scanned PDFs are pictures of pages, so their words cannot be edited; adding text, images, highlights and signatures still works on them.','Page numbers, when switched on, are stamped on every page as you save.'],
+  know:['Text is edited field by field: on a form or receipt, each value is its own field, and the field you change is covered and re-typed in the closest standard font — the rest of the row is never redrawn. Everything else — headings, logos, letterhead, layout — is untouched.','Each field\u2019s text colour is detected from the page and shown as a colour code (like #1A365D) in the editing bar — keep it, pick a new one, or type any code.','The page\u2019s pictures appear as dashed boxes: tap one to move it anywhere on the page, cover it, or replace it with a new picture in exactly the same place. Text fields can also be dragged to a new place — their words stay the same unless you edit them.','Scanned PDFs are pictures of pages, so their words cannot be edited; adding text, images, highlights and signatures still works on them.','Page numbers, when switched on, are stamped on every page as you save.'],
   faqs:[
     {q:'Is it free to edit a PDF here?',a:'Yes. Editing is completely free, with no account, no trial and no watermark.'},
     {q:'Are my files uploaded?',a:'No. The editor runs inside your browser, on your own device. Your document is never sent anywhere.'},

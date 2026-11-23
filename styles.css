@@ -203,3 +203,8 @@
 @media (max-width:560px){.demo-thumbs{grid-template-columns:repeat(3,1fr)}.demo-posrow{flex-direction:column}.demo-cmp .demo-page-sm{width:128px}}
 
 .wm-preview{margin:14px 0 4px}.wm-preview img{width:100%;max-width:430px;height:auto;display:block;border-radius:var(--r-md);border:1px solid var(--stroke);box-shadow:var(--shadow)}.wm-preview figcaption{margin-top:8px;color:var(--muted);font-size:var(--fs-2)}
+
+/* v4.7.28 — Scan to PDF: camera / add-photos action row above the options. */
+.scan-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+.scan-actions .pm-hint{flex-basis:100%;margin:2px 0 0}
+.scan-actions label.btn{cursor:pointer}
