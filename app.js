@@ -229,7 +229,7 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'
 const icon=(n,s=20)=>`<svg class="ic" width="${s}" height="${s}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const expandDesc=d=>d.replace(/\[\[([\w-]+)\]\]/g,(m,n)=>icon(n,14));
 const pillHTML=note=>{if(!note)return '';const txt=note.split('—')[0].trim();const cls=txt.split(/\s+/).filter(Boolean).length<=3?'pill tag':'pill';return `<span class="${cls}">${txt}</span>`};
-const POPULAR=['scan','merge','compress','pdf-to-jpg','images-to-pdf'];
+const POPULAR=['merge','compress','pdf-to-jpg','images-to-pdf'];
 /* Short card blurbs (v4.5.2, F9): cards get one plain line each — the full
    desc stays on the tool panel and the tool pages, where there is room. */
 const CARD_BLURBS={'scan':'Photograph paper pages and turn them into one clean PDF.','merge':'Combine several PDFs into one file, in your order.','split':'Split by page ranges, one PDF per page, or by tapping pages.','remove-pages':'Tap the pages you do not want and delete them.','extract-pages':'Pull the pages you pick out into a new PDF.','organize':'Drag pages into a new order, remove pages, or add a blank one.','rotate':'Rotate single pages, or every page at once.','crop':'Select the part of the page to keep — just drag on the preview.','compress':'Make a PDF smaller. Best for scans and photo-heavy files.','repair':'Re-save a damaged PDF cleanly so it opens again.','ocr':'Make scanned PDFs searchable. English, on your device.','images-to-pdf':'Turn JPG and PNG images into one polished PDF.','html-to-pdf':'Turn an HTML file into a clean, readable PDF.','word-to-pdf':'Convert a Word (.docx) file into a PDF.','pdf-to-jpg':'Save each page as a JPG image.','pdf-to-png':'Save each page as a crisp PNG image.','pdf-to-text':'Pull all the readable text out as a .txt file.','pdf-to-word':'Extract the text into an editable Word file.','pdf-to-excel':'Turn PDF text into a spreadsheet, row by row.','pdf-to-markdown':'Extract the text as Markdown, page by page.','pdf-editor':'Change the words in a PDF, and add text, images and a signature.','edit-pdf':'Click the page preview to place new text on it.','annotate':'Add a highlighted note anywhere on a page.','page-numbers':'Stamp page numbers where you want them.','watermark':'Add a faint text watermark across your pages.','sign-pdf':'Draw, type or upload a signature and place it.','redact':'Black out sensitive areas — removed for good, not just covered.','protect':'Lock a PDF with a password you choose.','unlock':'Remove a password from a PDF you own.','metadata':'See and edit the title, author and keywords inside a PDF.','compare':'Compare two PDFs and get a text difference report.','summarize':'Get the key sentences from a document, on your device.'};
@@ -241,18 +241,12 @@ const SLUGS={'scan':'scan-pdf','merge':'merge-pdf','split':'split-pdf','remove-p
    URL there — the address already names the tool. On the home SPA,
    openTool mirrors that same clean /<slug>/ path (v4.6.1). */
 const PAGE_TOOL=(document.body&&document.body.dataset&&document.body.dataset.tool)||null;function clearSearch(){const si=$('searchInput');if(si)si.value='';renderTools('')}
-/* Homepage groups (v4.7.28, Safwan's mobile-first arrangement): three
-   plain-word groups replace the category sections ON THE HOME GRID ONLY.
-   Tool categories (t.cat) are unchanged — they still drive the result
-   panel's "Continue to" row. Every tool appears exactly once. */
-const HOME_GROUPS=[
- {name:'Best on mobile',sub:'The tools that shine on a phone',ids:['scan','images-to-pdf','sign-pdf','compress','merge','pdf-to-jpg','pdf-to-png']},
- {name:'Useful on mobile',sub:'Handy on a phone, too',ids:['split','remove-pages','extract-pages','rotate','organize','pdf-to-text','pdf-to-word','pdf-to-excel','pdf-editor','edit-pdf','annotate','watermark','page-numbers','unlock','metadata','summarize','ocr']},
- {name:'Better on desktop',sub:'Easier with a keyboard and a big screen',ids:['crop','repair','html-to-pdf','word-to-pdf','pdf-to-markdown','redact','protect','compare']}];
 function renderTools(filter=''){
-  const fq=filter.toLowerCase(); let html='';
-  HOME_GROUPS.forEach(g=>{const list=g.ids.map(id=>TOOLS.find(t=>t.id===id)).filter(Boolean).filter(t=>!fq||(t.name+' '+t.desc).toLowerCase().includes(fq)); if(!list.length)return;
-    html+=`<section class="cat"><h2>${g.name}</h2><p>${g.sub}</p><div class="grid">${list.map((t,i)=>`<a class="card glass rv" style="--rd:${(i%4)*70}ms" href="/${SLUGS[t.id]}/" onclick="openTool('${t.id}');return false"><div class="icchip"><span class="ic-in">${icon(t.icon,24)}</span></div><h3>${t.name}</h3><p>${expandDesc(cardText(t))}</p>${pillHTML(t.note)}</a>`).join('')}</div></section>`});
+  const cats=[...new Set(TOOLS.map(t=>t.cat))]; let html='';
+  if(!filter){const pop=POPULAR.map(id=>TOOLS.find(t=>t.id===id)).filter(Boolean);
+    html+=`<section class="cat" id="popular"><h2>${icon('flame',22)} Most popular</h2><p>The everyday tools — one tap away</p><div class="grid">${pop.map((t,i)=>`<a class="card glass rv pop" style="--rd:${(i%4)*70}ms" href="/${SLUGS[t.id]}/" onclick="openTool('${t.id}');return false"><div class="icchip"><span class="ic-in">${icon(t.icon,24)}</span></div><h3>${t.name}</h3><p>${expandDesc(cardText(t))}</p><span class="pill tag">Popular</span>${pillHTML(t.note)}</a>`).join('')}</div></section>`}
+  cats.forEach(c=>{const list=TOOLS.filter(t=>t.cat===c&&(t.name+' '+t.desc).toLowerCase().includes(filter.toLowerCase())); if(!list.length)return;
+    html+=`<section class="cat"><h2>${c}</h2><p>${CAT_SUB[c]||''}</p><div class="grid">${list.map((t,i)=>`<a class="card glass rv" style="--rd:${(i%4)*70}ms" href="/${SLUGS[t.id]}/" onclick="openTool('${t.id}');return false"><div class="icchip"><span class="ic-in">${icon(t.icon,24)}</span></div><h3>${t.name}</h3><p>${expandDesc(cardText(t))}</p>${pillHTML(t.note)}</a>`).join('')}</div></section>`});
   const sm=$('searchMeta');const q=filter.trim();if(sm){if(q){const n=TOOLS.filter(t=>(t.name+' '+t.desc).toLowerCase().includes(q.toLowerCase())).length;sm.textContent=n?n+' tool'+(n===1?'':'s')+' match \u201c'+q+'\u201d':'No tools match that search.';sm.classList.remove('hidden')}else sm.classList.add('hidden')}
   $('tools').innerHTML=html||`<div class="emptystate glass"><p>No tools match \u201c${esc(q)}\u201d. Try a shorter word — or browse them all.</p><button class="btn" type="button" onclick="clearSearch()">Show all tools</button></div>`;
   revealScan(!!filter);

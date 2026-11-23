@@ -112,7 +112,7 @@ ${faqs}
     <div class="relrow">${rel}</div>
   </section>
 </main>`;
-  const page = [head, `<body data-tool="${t.id}">`, sprite, subHeader, main, footer, toast, '<script src="/app.js?v=70" defer></script><script src="/demo.js?v=5" defer></script>', '</body></html>', ''].join('\n');
+  const page = [head, `<body data-tool="${t.id}">`, sprite, subHeader, main, footer, toast, '<script src="/app.js?v=71" defer></script><script src="/demo.js?v=5" defer></script>', '</body></html>', ''].join('\n');
   const dir = path.join(ROOT, t.slug);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), page);
@@ -290,7 +290,7 @@ fs.writeFileSync(path.join(ROOT, 'text-to-pdf', 'index.html'), `<!doctype html>
 console.log('text-to-pdf stub written');
 
 /* ---- sitemap.xml (37 URLs) ---- */
-const ORDER = ['scan-pdf','merge-pdf', 'compress-pdf', 'jpg-to-pdf', 'pdf-to-word', 'pdf-to-jpg', 'word-to-pdf', 'split-pdf', 'pdf-to-excel', 'sign-pdf', 'ocr-pdf', 'edit-pdf', 'pdf-to-png', 'pdf-to-text', 'rotate-pdf', 'watermark-pdf', 'protect-pdf', 'unlock-pdf', 'remove-pages', 'extract-pages', 'organize-pdf', 'crop-pdf', 'page-numbers', 'annotate-pdf', 'html-to-pdf', 'pdf-editor', 'pdf-metadata', 'repair-pdf', 'compare-pdf', 'pdf-to-markdown', 'summarize-pdf', 'redact-pdf'];
+const ORDER = ['merge-pdf', 'compress-pdf', 'jpg-to-pdf', 'pdf-to-word', 'pdf-to-jpg', 'word-to-pdf', 'split-pdf', 'pdf-to-excel', 'sign-pdf', 'ocr-pdf', 'edit-pdf', 'pdf-to-png', 'pdf-to-text', 'rotate-pdf', 'watermark-pdf', 'protect-pdf', 'unlock-pdf', 'remove-pages', 'extract-pages', 'organize-pdf', 'crop-pdf', 'page-numbers', 'annotate-pdf', 'html-to-pdf', 'pdf-editor', 'pdf-metadata', 'repair-pdf', 'compare-pdf', 'pdf-to-markdown', 'summarize-pdf', 'redact-pdf', 'scan-pdf'];
 const TOP = new Set(ORDER.slice(0, 10));
 const urls = [{ loc: BASE + '/', pr: '1.0', cf: 'weekly' }]
   .concat(ORDER.map(s => ({ loc: `${BASE}/${s}/`, pr: TOP.has(s) ? '0.9' : '0.8', cf: 'weekly' })))
