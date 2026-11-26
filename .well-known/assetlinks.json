@@ -1,14 +1,1 @@
-[
-  {
-    "relation": [
-      "delegate_permission/common.handle_all_urls"
-    ],
-    "target": {
-      "namespace": "android_app",
-      "package_name": "com.pdfstow.app",
-      "sha256_cert_fingerprints": [
-        "D6:14:40:BE:F4:9A:7C:34:74:ED:5F:01:6A:85:AA:6C:96:46:19:69:4F:25:2E:E3:38:9E:22:BE:08:C1:2B:AF"
-      ]
-    }
-  }
-]
+[{"relation":["delegate_permission/common.handle_all_urls"],"target":{"namespace":"android_app","package_name":"com.pdfstow.app","sha256_cert_fingerprints":["D6:14:40:BE:F4:9A:7C:34:74:ED:5F:01:6A:85:AA:6C:96:46:19:69:4F:25:2E:E3:38:9E:22:BE:08:C1:2B:AF","FD:40:06:4D:0E:28:94:EF:61:2F:77:A4:35:14:94:26:17:87:C5:77:19:85:13:AC:24:FA:48:E2:EB:81:4B:3B","13:73:2D:D1:59:94:99:DE:BF:36:BE:57:60:DC:DC:62:1B:93:45:FA:02:EB:DD:42:F5:F5:28:43:3D:EA:8D:E5","99:6B:EA:DA:BA:2A:C8:E1:F6:9E:3B:F7:38:EE:D3:4C:C1:10:AB:09:F6:51:5C:B7:00:C9:E6:A0:14:9D:9A:01"]}}]
