@@ -174,7 +174,7 @@ const trustThemeScript = `<script>
 const SECTIONS = {
   about: `<section class="glass" id="about">
       <h1>About PDFStow</h1>
-      <p>PDFStow is a free set of 32 PDF tools — merge, split, compress, convert, edit, sign, protect and more — that runs entirely in your web browser. It is made by <strong>Safwan Digital</strong>.</p>
+      <p>PDFStow is a free set of 32+ PDF tools — merge, split, compress, convert, edit, sign, protect and more — that runs entirely in your web browser. It is made by <strong>Safwan Digital</strong>.</p>
       <p>There is no account to create and nothing to install. You open a tool, pick your file, and download the result.</p>
       <p>PDFStow is built and run by <a href="https://safwan.digital" target="_blank" rel="noopener">Safwan.Digital</a>.</p>
     </section>
@@ -224,7 +224,7 @@ const SECTIONS = {
     </section>`
 };
 const TRUST_PAGES = [
-  { slug: 'about', title: 'About PDFStow — Free PDF Tools That Run in Your Browser', desc: 'PDFStow is a free set of 32 PDF tools that runs entirely in your browser — no uploads, no account. Made by Safwan Digital. Here is how it works.', sections: ['about'] },
+  { slug: 'about', title: 'About PDFStow — Free PDF Tools That Run in Your Browser', desc: 'PDFStow is a free set of 32+ PDF tools that runs entirely in your browser — no uploads, no account. Made by Safwan Digital. Here is how it works.', sections: ['about'] },
   { slug: 'privacy', title: 'PDFStow Privacy — Your Files Never Leave Your Device', desc: 'Your files are never uploaded: every PDFStow tool runs 100% in your browser. What the hosting, library and analytics services can see, in plain words.', sections: ['privacy'] },
   { slug: 'terms', title: 'Terms of Use — PDFStow', desc: 'The simple terms for using PDFStow\u2019s free tools: free for personal and business use, only change documents you own, and keep your own copies.', sections: ['terms'] },
   { slug: 'contact', title: 'Contact — PDFStow', desc: 'Questions, feedback or a bug to report? Email PDFStow at info@safwan.digital, reach out on Instagram at @safwan.digital, or open an issue on GitHub — the full source code is public.', sections: ['contact'] }
@@ -303,8 +303,8 @@ console.log('sitemap URLs:', urls.length);
 
 /* ---- llms.txt (draft adapted to the final structure) ---- */
 let llms = fs.readFileSync(path.join(ROOT, 'seo-drafts', 'llms.txt'), 'utf8');
-llms = llms.replace('- [All PDFStow tools](https://pdfstow.com/tools/): The full list of 32 tools.',
-  '- [All PDFStow tools](https://pdfstow.com/): The home page lists all 32 tools, with search.');
+llms = llms.replace('- [All PDFStow tools](https://pdfstow.com/tools/): The full list of 32+ tools.',
+  '- [All PDFStow tools](https://pdfstow.com/): The home page lists all 32+ tools, with search.');
 llms = llms.replace('- [About, Privacy and Terms](https://pdfstow.com/trust/): How PDFStow works, why files are never uploaded, and the terms of use. PDFStow is made by Safwan Digital (safwan.digital). Contact: Instagram @safwan.digital or the GitHub repo.',
   '- [About PDFStow](https://pdfstow.com/about/): What PDFStow is and how it works. PDFStow is made by Safwan Digital (safwan.digital).\n- [Privacy](https://pdfstow.com/privacy/): Why files are never uploaded, and what hosting, library and analytics services can see.\n- [Terms](https://pdfstow.com/terms/): The simple terms of use.\n- [Contact](https://pdfstow.com/contact/): Email info@safwan.digital, Instagram @safwan.digital or the GitHub repo.');
 llms = llms.replace('- [Text to PDF](https://pdfstow.com/text-to-pdf/): Turn plain text into a clean PDF.',

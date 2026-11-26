@@ -221,6 +221,7 @@
 @media (max-width:560px){.storebadges{flex-direction:column;gap:12px}}
 
 /* v4.7.32 — Android APK direct-download badge: third chip in the footer store-badge row, styled to sit with the Microsoft + Chrome badges (44px tall, Midnight & Gold). */
+/* v4.7.33 — SEO keyword pages (Compress, Split, PDF to Word, JPG to PDF), "32+" tool-count copy, footer ImageStow cross-link line. */
 .storebadges a.apk-badge{display:inline-flex;align-items:center;gap:9px;height:44px;padding:5px 15px 5px 12px;border-radius:10px;background:#1a365d;border:1px solid #1a365d;color:#f4eee1;line-height:1.15;text-align:left}
 .storebadges a.apk-badge svg{width:22px;height:22px;flex:none}
 .storebadges a.apk-badge .apk-txt{display:flex;flex-direction:column;gap:1px}
@@ -229,3 +230,8 @@
 .storebadges a.apk-badge:hover{background:#22477a}
 [data-theme=dark] .storebadges a.apk-badge{background:rgba(197,160,89,.10);border-color:rgba(197,160,89,.55)}
 [data-theme=dark] .storebadges a.apk-badge:hover{background:rgba(197,160,89,.18);border-color:#c5a059}
+
+/* Sister-tools cross-link line in the footer (off-page SEO): same muted centered footer text; links match the .credit link treatment. */
+.sistertools{margin:8px 0 0}
+.sistertools a{color:var(--accent);font-weight:600;text-decoration:none}
+.sistertools a:hover{text-decoration:underline}
