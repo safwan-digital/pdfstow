@@ -47,7 +47,7 @@ function subHead(html, { title, desc, url, bodyAttr, jsonld }) {
   h = h.replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${escA(desc)}">`);
   h = h.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
   if (jsonld) h = h.replace('<!-- The manifest link', `<script type="application/ld+json">\n${jsonld}\n</script>\n<!-- The manifest link`);
-  h = h.replace('href="styles.css?v=69"', 'href="/styles.css?v=69"');
+  h = h.replace('href="styles.css?v=70"', 'href="/styles.css?v=70"');
   h = h.replace('href="favicon.ico"', 'href="/favicon.ico"');
   h = h.replace('href="favicon-32.png"', 'href="/favicon-32.png"');
   h = h.replace('href="apple-touch-icon.png"', 'href="/apple-touch-icon.png"');
@@ -101,7 +101,6 @@ ${steps}
     <ul>
 ${know}
     </ul>
-    <p>Like every PDFStow tool, it is free, needs no sign-up, and runs entirely in your browser — your files are never uploaded.</p>
   </section>
   <section class="seo glass">
     <h2>Questions</h2>
@@ -156,7 +155,7 @@ function trustHead(title, desc, slug) {
 ${ldjson({ '@context': 'https://schema.org', '@type': 'WebPage', name: title, description: desc, url: `${BASE}/${slug}/`, isPartOf: { '@type': 'WebSite', name: 'PDFStow', url: BASE + '/' }, publisher: { '@type': 'Organization', name: 'Safwan.Digital', url: 'https://safwan.digital', logo: `${BASE}/icon-512.png` } })}
 </script>
 <script>try{if(/^https?:$/.test(location.protocol)&&/\\/index\\.html$/.test(location.pathname)){history.replaceState(null,'',location.pathname.replace(/\\/index\\.html$/,'/')+location.search+location.hash)}}catch(e){}try{localStorage.removeItem('aurelia-palette');var _t=localStorage.getItem('aurelia-theme');if(_t==='dark'||(_t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.dataset.theme='dark'}catch(e){}</script>
-<link rel="stylesheet" href="/styles.css?v=69">
+<link rel="stylesheet" href="/styles.css?v=70">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -177,6 +176,7 @@ const SECTIONS = {
       <p>PDFStow is a free set of 32+ PDF tools — merge, split, compress, convert, edit, sign, protect and more — that runs entirely in your web browser. It is made by <strong>Safwan Digital</strong>.</p>
       <p>There is no account to create and nothing to install. You open a tool, pick your file, and download the result.</p>
       <p>PDFStow is built and run by <a href="https://safwan.digital" target="_blank" rel="noopener">Safwan.Digital</a>.</p>
+      <p>Don’t just take our word for the privacy promise: the complete source code is public on <a href="https://github.com/safwan-digital/pdfstow" target="_blank" rel="noopener">GitHub</a>, so anyone can check that files are never uploaded.</p>
     </section>
     <section class="glass" id="how">
       <h2>How PDFStow works</h2>
@@ -194,7 +194,7 @@ const SECTIONS = {
         <li><strong>First-use downloads:</strong> a few tools load their library only when you first open them. The first time you use OCR, your browser also downloads the English language data (about 10 MB) from jsDelivr; after that it is cached on your device.</li>
         <li><strong>Analytics:</strong> PDFStow uses Google Analytics and Microsoft Clarity to count visits and see how people use the pages — which tools are popular, and where people click and scroll — so the site can be improved. They never receive your files or anything inside them: your documents still never leave your device. Like the hosting and library servers above, these services receive a normal visit request (such as your IP address and browser type) — about your visit, never about your documents.</li>
         <li><strong>No accounts, no adverts:</strong> PDFStow has no accounts and no advertising. Your light/dark theme choice is stored only on your own device.</li>
-        <li><strong>Check it yourself:</strong> the complete source code is public on GitHub, so anyone can verify that files are never uploaded — see the <a href="/contact/">Contact page</a>.</li>
+        <li><strong>Check it yourself:</strong> the complete source code is public — read it, or watch what your browser sends, at <a href="https://github.com/safwan-digital/pdfstow" target="_blank" rel="noopener">github.com/safwan-digital/pdfstow</a>. Anyone can verify that files are never uploaded.</li>
       </ul>
     </section>`,
   terms: `<section class="glass" id="terms">
@@ -292,11 +292,15 @@ console.log('text-to-pdf stub written');
 /* ---- sitemap.xml (37 URLs) ---- */
 const ORDER = ['merge-pdf', 'compress-pdf', 'jpg-to-pdf', 'pdf-to-word', 'pdf-to-jpg', 'word-to-pdf', 'split-pdf', 'pdf-to-excel', 'sign-pdf', 'ocr-pdf', 'edit-pdf', 'pdf-to-png', 'pdf-to-text', 'rotate-pdf', 'watermark-pdf', 'protect-pdf', 'unlock-pdf', 'remove-pages', 'extract-pages', 'organize-pdf', 'crop-pdf', 'page-numbers', 'annotate-pdf', 'html-to-pdf', 'pdf-editor', 'pdf-metadata', 'repair-pdf', 'compare-pdf', 'pdf-to-markdown', 'summarize-pdf', 'redact-pdf', 'scan-pdf'];
 const TOP = new Set(ORDER.slice(0, 10));
-const urls = [{ loc: BASE + '/', pr: '1.0', cf: 'weekly' }]
-  .concat(ORDER.map(s => ({ loc: `${BASE}/${s}/`, pr: TOP.has(s) ? '0.9' : '0.8', cf: 'weekly' })))
-  .concat(['about', 'privacy', 'terms', 'contact'].map(s => ({ loc: `${BASE}/${s}/`, pr: '0.3', cf: 'monthly' })));
+/* Per-page lastmod: set a page's date here when its own content changes;
+   pages touched by a site-wide release take that release's date. */
+const RELEASE_DATE = '2026-11-27';
+const TRUST_DATES = { about: '2026-11-27', privacy: '2026-11-27', terms: '2026-11-17', contact: '2026-11-22' };
+const urls = [{ loc: BASE + '/', pr: '1.0', cf: 'weekly', dt: RELEASE_DATE }]
+  .concat(ORDER.map(s => ({ loc: `${BASE}/${s}/`, pr: TOP.has(s) ? '0.9' : '0.8', cf: 'weekly', dt: RELEASE_DATE })))
+  .concat(['about', 'privacy', 'terms', 'contact'].map(s => ({ loc: `${BASE}/${s}/`, pr: '0.3', cf: 'monthly', dt: TRUST_DATES[s] })));
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
-  + urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>2026-11-17</lastmod><changefreq>${u.cf}</changefreq><priority>${u.pr}</priority></url>`).join('\n')
+  + urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${u.dt}</lastmod><changefreq>${u.cf}</changefreq><priority>${u.pr}</priority></url>`).join('\n')
   + `\n</urlset>\n`;
 fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
 console.log('sitemap URLs:', urls.length);

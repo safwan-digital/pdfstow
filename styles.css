@@ -217,6 +217,9 @@
 [data-theme=dark] .storebadges .msb-dark{display:none}
 [data-theme=dark] .storebadges .msb-light{display:block}
 .storebadges a{display:block;line-height:0}
+.foottools{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;max-width:920px;margin:16px auto 2px;font-size:var(--fs-2)}
+.foottools a{color:var(--muted);padding:3px 2px}
+.foottools a:hover{color:var(--accent)}
 .storebadges img{display:block;height:44px;width:auto;max-width:220px}
 @media (max-width:560px){.storebadges{flex-direction:column;gap:12px}}
 
