@@ -111,7 +111,7 @@ ${faqs}
     <div class="relrow">${rel}</div>
   </section>
 </main>`;
-  const page = [head, `<body data-tool="${t.id}">`, sprite, subHeader, main, footer, toast, '<script src="/app.js?v=73" defer></script><script src="/demo.js?v=5" defer></script>', '</body></html>', ''].join('\n');
+  const page = [head, `<body data-tool="${t.id}">`, sprite, subHeader, main, footer, toast, '<script src="/app.js?v=74" defer></script><script src="/demo.js?v=5" defer></script>', '</body></html>', ''].join('\n');
   const dir = path.join(ROOT, t.slug);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), page);

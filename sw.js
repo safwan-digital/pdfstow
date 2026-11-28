@@ -15,7 +15,7 @@
      are bypassed entirely: the fetch handler returns without respondWith,
      so analytics traffic is never cached and never stale-served.
    Only GET requests are handled; range requests are left to the network. */
-const CACHE = 'pdfstow-v4.7.39';
+const CACHE = 'pdfstow-v4.7.40';
 const SHELL = [
   './', 'index.html',
   'app.js?v=55', 'app.js',

@@ -732,7 +732,7 @@ const PE_RTL_RE=/[\u0590-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
    remains non-plain about them is the presentation-form code points,
    which NFKC maps back to ordinary letters for reading and search. */
 function peLogical(t){return String(t).normalize('NFKC')}
-function peFrac(e){const r=$('peOverlay').getBoundingClientRect();return{fx:Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),fy:Math.min(1,Math.max(0,(e.clientY-r.top)/r.height))}}
+function peFrac(e){const r=$('peOverlay').getBoundingClientRect();return{fx:Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),fy:Math.min(1,Math.max(0,(e.clientY-r.top)/r.height-((pe&&pe.pageDy)||0)))}}
 let peSeq=0;
 /* Median of the edge pixels of a page-fraction rect, sampled from a
    rendered canvas of the page — the colour covers blend with. */
@@ -763,7 +763,7 @@ async function peExtractImages(pg,pw,ph){const out=[];try{if(!window.pdfjsLib||!
   }catch(e){}
   return out}
 function buildPdfEditor(pdf){
-  pe={pdf,count:pdf.numPages,page:0,pageW:0,pageH:0,mode:'edit',ops:[],redo:[],sel:-1,lines:[],images:[],imgSel:-1,bmpCache:null,hasText:false,mostSize:12,lineCache:{},zoom:1,rot:0,rotCache:{},pn:{on:false,pos:'bottom-center',start:1},txt:{text:'',size:18,color:0,custCss:null,custRgb:null,bold:false,sizeTouched:false},mark:{style:'highlight',hl:0,line:0},shape:{kind:'rect',color:0,width:1.5,fill:false},draw:{color:0,width:2},stamp:0,editLine:-1,editFmt:null,formKind:'text',linkUrl:'',newBox:null};
+  pe={pdf,count:pdf.numPages,page:0,pageW:0,pageH:0,mode:'edit',ops:[],redo:[],sel:-1,lines:[],images:[],imgSel:-1,bmpCache:null,hasText:false,mostSize:12,lineCache:{},zoom:1,rot:0,rotCache:{},pn:{on:false,pos:'bottom-center',start:1},pageDy:0,txt:{text:'',size:18,color:0,custCss:null,custRgb:null,bold:false,sizeTouched:false},mark:{style:'highlight',hl:0,line:0},shape:{kind:'rect',color:0,width:1.5,fill:false},draw:{color:0,width:2},stamp:0,editLine:-1,editFmt:null,formKind:'text',linkUrl:'',newBox:null};
   const modes=PE_MODES.map(m=>`<button type="button" class="pe-tool${m.id==='edit'?' sel':''}" data-pemode="${m.id}" aria-pressed="${m.id==='edit'}">${icon(m.icon,17)} ${m.label}</button>`).join('');
   $('visualWrap').innerHTML=`<div class="pm pe"><div class="pe-head"><button type="button" class="pe-tool" id="peUndoH">${icon('rotate-ccw',17)} Undo</button><button type="button" class="pe-tool" id="peRedoH">${icon('rotate-cw',17)} Redo</button><span class="pe-count" id="peCountH">0 changes</span><span class="pe-spacer"></span><button type="button" class="btn sm" id="peSaveH">Save edited PDF</button></div><div class="pe-rotwarn hidden" id="peRotWarn">${icon('triangle-alert',15)}<span>This page is rotated — editing and placing are paused on rotated pages, so nothing can land in the wrong place. Other pages work as normal.</span></div><div class="pe-tools" role="toolbar" aria-label="Editor tools">${modes}<button type="button" class="pe-tool" id="pePnBtn" aria-pressed="false">${icon('hash',17)} Page numbers</button><span class="pe-spacer"></span><button type="button" class="pe-tool" id="peUndo">${icon('rotate-ccw',17)} Undo</button><button type="button" class="pe-tool" id="peRedo">${icon('rotate-cw',17)} Redo</button><span class="pe-count" id="peCount">0 changes</span></div><p class="pm-hint pe-keys">${icon('keyboard',14)}<span>Shortcuts: Ctrl+Z undo · Ctrl+Shift+Z redo · Ctrl+C / Ctrl+V copy &amp; paste · Delete removes the selected item</span></p><div class="pe-modebar" id="peModeBar"></div><div class="pe-pn hidden" id="pePn"></div><div class="pm-toolbar"><strong>Page preview</strong><span class="pm-nav"><button type="button" class="chipbtn wide" id="peZoomOut" aria-label="Zoom out">${icon('minimize-2',15)}</button><span id="peZoomPct" class="pm-info">100%</span><button type="button" class="chipbtn wide" id="peZoomIn" aria-label="Zoom in">${icon('plus',15)}</button></span><span class="pm-nav"><button type="button" class="chipbtn wide" id="pePrev">${icon('chevron-left',15)} Prev</button><span id="pePageInfo" class="pm-info"></span><button type="button" class="chipbtn wide" id="peNext">Next ${icon('chevron-right',15)}</button></span></div><div class="pe-zoomwrap"><div class="stage" id="peStage"><canvas id="peCanvas"></canvas><div id="peOverlay"></div></div></div><input type="file" id="peImgFile" accept="image/png,image/jpeg" class="hidden"><input type="file" id="peImgRepFile" accept="image/png,image/jpeg" class="hidden"></div>`;
   document.querySelectorAll('[data-pemode]').forEach(b=>b.addEventListener('click',()=>peSetMode(b.dataset.pemode)));
@@ -952,14 +952,35 @@ function peComputeLines(tc){
 }
 function peMostSize(lines){if(!lines.length)return 12;const freq={};lines.forEach(l=>{const s=Math.max(6,Math.round(l.size));freq[s]=(freq[s]||0)+1});let best=12,n=0;Object.keys(freq).forEach(s=>{if(freq[s]>n){n=freq[s];best=parseInt(s)}});return best}
 async function peBuildLines(pg,pageIdx){
-  if(!pe)return;const cached=pe.lineCache[pageIdx];if(cached){pe.lines=cached.lines;pe.hasText=cached.hasText;pe.mostSize=cached.mostSize;pe.images=cached.images||[];return}
-  let lines=[],hasText=false,mostSize=12,images=[];
+  if(!pe)return;const cached=pe.lineCache[pageIdx];if(cached){pe.lines=cached.lines;pe.hasText=cached.hasText;pe.mostSize=cached.mostSize;pe.images=cached.images||[];pe.pageDy=cached.pageDy||0;return}
+  let lines=[],hasText=false,mostSize=12,images=[],pageDy=0;
   if((pg.rotate||0)!==0){if(pe){pe.lineCache[pageIdx]={lines:[],hasText:false,mostSize:12,images:[],rot:pg.rotate};if(pe.page===pageIdx){pe.lines=[];pe.hasText=false;pe.mostSize=12;pe.images=[]}}return}
   try{const tc=await pg.getTextContent();tc.items.forEach(it=>{it._fontName=peFontName(pg,it)});lines=peComputeLines(tc);hasText=lines.length>0;mostSize=peMostSize(lines);
     const cv=$('peCanvas');if(cv)lines.forEach(l=>{l.cover=peSampleFrom(cv,l.fx,l.fTop,l.fw,l.fh,pe.pageW,pe.pageH);const ink=peDetectInk(cv,l,pe.pageW,pe.pageH);if(ink){l.ink=ink;l.inkCss=peRgbHex(ink)}});
+    /* Ink snap (v4.7.40): some producers' fonts make the browser's
+       preview paint the words LOWER than the text layer's baseline —
+       Safwan's customs letter (IBM Plex Sans) paints ~0.8em low on
+       screen while the saved file is perfectly placed. Boxes and
+       covers drawn from the raw baseline then sit too high: drag a
+       word away and the bottom half of the old word stays visible.
+       So measure each field's real ink on the rendered page (iTop /
+       iBot for its box and cover) and keep the page-wide median
+       shift as pageDy: everything placed is drawn shifted by pageDy
+       and peFrac converts taps back, so preview and saved file
+       agree. Stored ops and the save path keep true PDF geometry. */
+    if(cv&&cv.width&&lines.length){try{const g2=cv.getContext('2d',{willReadFrequently:true});const dys=[];
+      lines.forEach(l=>{l.iTop=l.fTop;l.iBot=l.fTop+l.fh;l.iDy=0;
+        try{const em=l.size/pe.pageH;const x0=Math.max(0,Math.round((l.fx+l.fw*.05)*cv.width)),x1=Math.min(cv.width,Math.round((l.fx+l.fw*.95)*cv.width));
+          const y0=Math.max(0,Math.round((l.fTop-em*.8)*cv.height)),y1=Math.min(cv.height,Math.round((l.fTop+l.fh+em*.8)*cv.height));
+          if(x1-x0<3||y1-y0<3)return;const img=g2.getImageData(x0,y0,x1-x0,y1-y0).data;const bg=l.cover||[1,1,1];const rows=new Array(y1-y0).fill(0);
+          for(let y=0;y<y1-y0;y++)for(let x=0;x<x1-x0;x++){const o=(y*(x1-x0)+x)*4;if(Math.abs(img[o]/255-bg[0])+Math.abs(img[o+1]/255-bg[1])+Math.abs(img[o+2]/255-bg[2])>.35)rows[y]++}
+          const boxY0=l.fTop*cv.height,boxY1=(l.fTop+l.fh)*cv.height;let best=null,cs=-1;
+          for(let y=0;y<rows.length;y++){if(rows[y]>=2&&cs<0)cs=y;if((rows[y]<2||y===rows.length-1)&&cs>=0){const ce=rows[y]>=2?y:y-1;const ay0=y0+cs,ay1=y0+ce;const ovp=Math.max(0,Math.min(ay1,boxY1)-Math.max(ay0,boxY0));const score=ovp*100000-Math.abs((ay0+ay1)/2-(boxY0+boxY1)/2);if(!best||score>best.score)best={score,ay0,ay1};cs=-1}}
+          if(best&&(best.ay1-best.ay0)>=1){l.iTop=best.ay0/cv.height-em*.14;l.iBot=best.ay1/cv.height+em*.2;l.iDy=((best.ay0+best.ay1)/2-(boxY0+boxY1)/2)/cv.height;dys.push(l.iDy)}}catch(e){}});
+      if(dys.length>=3){dys.sort((a,b)=>a-b);const med=dys[dys.length>>1];const emMed=(mostSize||12)/pe.pageH;if(Math.abs(med)<=emMed*1.6)pageDy=med}}catch(e){}}
     images=await peExtractImages(pg,pe.pageW,pe.pageH);
   }catch(e){lines=[];hasText=false}
-  if(pe){pe.lineCache[pageIdx]={lines,hasText,mostSize,images};if(pe.page===pageIdx){pe.lines=lines;pe.hasText=hasText;pe.mostSize=mostSize;pe.images=images}}
+  if(pe){pe.lineCache[pageIdx]={lines,hasText,mostSize,images,pageDy};if(pe.page===pageIdx){pe.lines=lines;pe.hasText=hasText;pe.mostSize=mostSize;pe.images=images;pe.pageDy=pageDy}}
 }
 /* Lines for any page (Find & Replace): renders that page offscreen at
    scale 1.5 so its cover colours are sampled from the right page. */
@@ -1013,7 +1034,7 @@ function peMoveLine(li,dx,dy){if(!pe)return;const l=pe.lines[li];if(!l)return;co
   pe.redo=[];peDrawOverlay();peSyncCount();toast('Field moved — tap it any time to change its words too.')}
 function peDragEditText(e,op,el){if(!pe)return;e.stopPropagation();e.preventDefault();const start=peFrac(e);const ofx=op.fx,ofb=op.fBase;let moved=false;try{el.setPointerCapture(e.pointerId)}catch(_){}
   const cvs=$('peCanvas');const stageH=cvs?cvs.clientHeight:0;const sx=pe.pageW&&cvs?cvs.clientWidth/pe.pageW:1;
-  const move=ev=>{const p=peFrac(ev);const dx=p.fx-start.fx,dy=p.fy-start.fy;if(!moved&&Math.hypot(dx,dy)>.004)moved=true;if(!moved)return;op.fx=Math.min(.98,Math.max(0,ofx+dx));op.fBase=Math.min(1,Math.max(.02,ofb+dy));el.style.left=(op.fx*100)+'%';el.style.top=(op.fBase*stageH-op.size*sx*.84)+'px'};
+  const move=ev=>{const p=peFrac(ev);const dx=p.fx-start.fx,dy=p.fy-start.fy;if(!moved&&Math.hypot(dx,dy)>.004)moved=true;if(!moved)return;op.fx=Math.min(.98,Math.max(0,ofx+dx));op.fBase=Math.min(1,Math.max(.02,ofb+dy));el.style.left=(op.fx*100)+'%';el.style.top=((op.fBase+(pe.pageDy||0))*stageH-op.size*sx*.84)+'px'};
   const up=()=>{el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up);if(moved){pe.redo=[];peDrawOverlay()}else if(pe.lines[op.lineIdx])peSelectLine(op.lineIdx)};
   el.addEventListener('pointermove',move);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up)}
 /* Lift a picture off the page (v4.7.13): copy its pixels from the
@@ -1064,6 +1085,7 @@ function peDrawOverlay(){
      customs letter: a link could not be drawn over the edited
      company-name field. */
   ov.classList.toggle('pe-pass',['shapes','draw','cover','mark','link'].includes(pe.mode));
+  const dy=(pe.pageDy||0);
   const cvs=$('peCanvas');const stageW=ov.clientWidth||(cvs?cvs.clientWidth:0),stageH=ov.clientHeight||(cvs?cvs.clientHeight:0);
   const sx=pe.pageW?stageW/pe.pageW:1;
   /* Shapes + freehand live on one SVG layer (vector-effect keeps the
@@ -1072,32 +1094,32 @@ function peDrawOverlay(){
   const shapeOps=[];
   pe.ops.forEach((op,i)=>{if(op.page!==pe.page)return;
     if(op.type==='shape'){const col=PE_TXT_COLORS[op.color];let el=null;const bb=peOpBBox(op);
-      if(op.kind==='rect')el=peSvgEl('rect',{x:bb.fx*1000,y:bb.fy*1000,width:bb.fw*1000,height:bb.fh*1000,fill:op.fill?col.css:'none','fill-opacity':op.fill?.18:0,stroke:col.css,'stroke-width':op.width,'vector-effect':'non-scaling-stroke'});
-      else if(op.kind==='ellipse')el=peSvgEl('ellipse',{cx:(bb.fx+bb.fw/2)*1000,cy:(bb.fy+bb.fh/2)*1000,rx:bb.fw*500,ry:bb.fh*500,fill:op.fill?col.css:'none','fill-opacity':op.fill?.18:0,stroke:col.css,'stroke-width':op.width,'vector-effect':'non-scaling-stroke'});
-      else{el=peSvgEl('g',{});el.appendChild(peSvgEl('line',{x1:op.fx*1000,y1:op.fy*1000,x2:op.fx2*1000,y2:op.fy2*1000,stroke:col.css,'stroke-width':op.width,'vector-effect':'non-scaling-stroke'}));
-        if(op.kind==='arrow'){const dx=(op.fx2-op.fx)*1000,dy=(op.fy2-op.fy)*1000;const len=Math.max(1,Math.hypot(dx,dy));const hx=Math.min(26,len*.3),a=Math.atan2(dy,dx);[[a+2.6],[a-2.6]].forEach(([ang])=>{el.appendChild(peSvgEl('line',{x1:op.fx2*1000,y1:op.fy2*1000,x2:op.fx2*1000+hx*Math.cos(ang),y2:op.fy2*1000+hx*Math.sin(ang),stroke:col.css,'stroke-width':op.width,'vector-effect':'non-scaling-stroke'}))})}}
+      if(op.kind==='rect')el=peSvgEl('rect',{x:bb.fx*1000,y:(bb.fy+dy)*1000,width:bb.fw*1000,height:bb.fh*1000,fill:op.fill?col.css:'none','fill-opacity':op.fill?.18:0,stroke:col.css,'stroke-width':op.width,'vector-effect':'non-scaling-stroke'});
+      else if(op.kind==='ellipse')el=peSvgEl('ellipse',{cx:(bb.fx+bb.fw/2)*1000,cy:((bb.fy+bb.fh/2)+dy)*1000,rx:bb.fw*500,ry:bb.fh*500,fill:op.fill?col.css:'none','fill-opacity':op.fill?.18:0,stroke:col.css,'stroke-width':op.width,'vector-effect':'non-scaling-stroke'});
+      else{el=peSvgEl('g',{});el.appendChild(peSvgEl('line',{x1:op.fx*1000,y1:(op.fy+dy)*1000,x2:op.fx2*1000,y2:(op.fy2+dy)*1000,stroke:col.css,'stroke-width':op.width,'vector-effect':'non-scaling-stroke'}));
+        if(op.kind==='arrow'){const dx=(op.fx2-op.fx)*1000,dy=(op.fy2-op.fy)*1000;const len=Math.max(1,Math.hypot(dx,dy));const hx=Math.min(26,len*.3),a=Math.atan2(dy,dx);[[a+2.6],[a-2.6]].forEach(([ang])=>{el.appendChild(peSvgEl('line',{x1:op.fx2*1000,y1:(op.fy2+dy)*1000,x2:op.fx2*1000+hx*Math.cos(ang),y2:(op.fy2+dy)*1000+hx*Math.sin(ang),stroke:col.css,'stroke-width':op.width,'vector-effect':'non-scaling-stroke'}))})}}
       if(el){el.dataset.op=i;svg.appendChild(el);shapeOps.push(i)}}
-    else if(op.type==='draw'){const col=PE_TXT_COLORS[op.color];const pl=peSvgEl('polyline',{points:op.points.map(p=>(p[0]*1000)+','+(p[1]*1000)).join(' '),fill:'none',stroke:col.css,'stroke-width':op.width,'vector-effect':'non-scaling-stroke','stroke-linejoin':'round','stroke-linecap':'round'});pl.dataset.op=i;svg.appendChild(pl);shapeOps.push(i)}
+    else if(op.type==='draw'){const col=PE_TXT_COLORS[op.color];const pl=peSvgEl('polyline',{points:op.points.map(p=>(p[0]*1000)+','+((p[1]+dy)*1000)).join(' '),fill:'none',stroke:col.css,'stroke-width':op.width,'vector-effect':'non-scaling-stroke','stroke-linejoin':'round','stroke-linecap':'round'});pl.dataset.op=i;svg.appendChild(pl);shapeOps.push(i)}
   });
   ov.appendChild(svg);
   pe.ops.forEach((op,i)=>{if(op.page!==pe.page)return;const d=document.createElement('div');d.dataset.op=i;
-    if(op.type==='edit'){const ecx=op.cfx!==undefined?op.cfx:op.fx,ect=op.cTop!==undefined?op.cTop:op.fTop;d.className='pe-opedit';d.style.left=(ecx*100)+'%';d.style.top=(ect*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';d.style.background='rgb('+op.cover.map(v=>Math.round(v*255)).join(',')+')';
-      const s=document.createElement('div');s.className='pe-opmovtext';s.textContent=op.newText;s.style.left=(op.fx*100)+'%';s.style.top=(op.fBase*stageH-op.size*sx*.84)+'px';s.style.fontSize=(op.size*sx)+'px';s.style.fontFamily=peFontCss(op.fontName);if(op.bold)s.style.fontWeight='700';if(op.italic)s.style.fontStyle='italic';s.style.color=op.css;s.title='Drag to move this text — tap to edit it';s.addEventListener('pointerdown',e=>peDragEditText(e,op,s));d._movtext=s}
-    else if(op.type==='text'){d.className='pe-optext';d.style.left=(op.fx*100)+'%';d.style.top=(op.fBase*100)+'%';d.style.fontSize=(op.size*sx)+'px';d.style.color=op.css;if(op.bold)d.style.fontWeight='700';d.textContent=op.text;peWireObject(d,i,null)}
-    else if(op.type==='image'){d.className='pe-opimg';const img=document.createElement('img');img.src=op.url;img.alt=op.sign?'Your signature':'Added image';d.appendChild(img);d.style.left=(op.fx*100)+'%';d.style.top=(op.fy*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';const h=document.createElement('div');h.className='pe-handle';h.title='Drag to resize';d.appendChild(h);peWireObject(d,i,null);peWireHandle(h,d,i)}
-    else if(op.type==='mark'){d.className='pe-opmark';const col=op.style==='highlight'?PE_HL_COLORS[op.color]:[PE_TXT_COLORS[0],PE_TXT_COLORS[3],PE_TXT_COLORS[1]][op.color];if(op.style==='highlight'){d.style.background=col.css}else{const ln=document.createElement('div');ln.className='pe-markline '+(op.style==='strike'?'strike':'under');ln.style.background=col.css;d.appendChild(ln)}d.style.left=(op.fx*100)+'%';d.style.top=(op.fy*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';peWireObject(d,i,null)}
-    else if(op.type==='cover'){d.className='pe-cover';d.style.background='rgb('+op.cover.map(v=>Math.round(v*255)).join(',')+')';d.style.left=(op.fx*100)+'%';d.style.top=(op.fy*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';peWireObject(d,i,null)}
-    else if(op.type==='form'){d.className='pe-formfield';d.style.left=(op.fx*100)+'%';d.style.top=(op.fy*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';const lb=document.createElement('span');lb.className='pe-formlabel';lb.textContent=(op.kind==='check'?'Checkbox · ':'Text field · ')+(op.name||'Field');d.appendChild(lb);const h=document.createElement('div');h.className='pe-handle';h.title='Drag to resize';d.appendChild(h);peWireObject(d,i,null);peWireHandle(h,d,i)}
-    else if(op.type==='link'){d.className='pe-linkbox';d.style.left=(op.fx*100)+'%';d.style.top=(op.fy*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';d.title='Link to '+(op.url||'');peWireObject(d,i,null)}
-    else if(op.type==='stamp'){const st=PE_STAMPS[op.preset];d.className='pe-stamp';d.style.left=(op.fx*100)+'%';d.style.top=(op.fy*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';d.style.color=st.css;d.style.borderColor=st.css;d.style.fontSize=((op.fs0*(op.fw/op.fw0))*sx)+'px';d.textContent=st.text;const h=document.createElement('div');h.className='pe-handle';h.title='Drag to resize';d.appendChild(h);peWireObject(d,i,null);peWireHandle(h,d,i)}
-    else if(op.type==='shape'||op.type==='draw'){const bb=peOpBBox(op);d.className='pe-hit';d.style.left=(bb.fx*100)+'%';d.style.top=(bb.fy*100)+'%';d.style.width=(bb.fw*100)+'%';d.style.height=(bb.fh*100)+'%';const node=svg.querySelector('[data-op="'+i+'"]');peWireObject(d,i,node)}
+    if(op.type==='edit'){const ecx=op.cfx!==undefined?op.cfx:op.fx,ect=op.cTop!==undefined?op.cTop:op.fTop;const eln=pe.lines[op.lineIdx];const ecT=eln?(eln.iTop+(ect-eln.fTop)):ect+dy;const ecH=eln?((eln.iBot-eln.iTop)+(op.fh-eln.fh)):op.fh;d.className='pe-opedit';d.style.left=(ecx*100)+'%';d.style.top=(ecT*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(ecH*100)+'%';d.style.background='rgb('+op.cover.map(v=>Math.round(v*255)).join(',')+')';
+      const s=document.createElement('div');s.className='pe-opmovtext';s.textContent=op.newText;s.style.left=(op.fx*100)+'%';s.style.top=((op.fBase+dy)*stageH-op.size*sx*.84)+'px';s.style.fontSize=(op.size*sx)+'px';s.style.fontFamily=peFontCss(op.fontName);if(op.bold)s.style.fontWeight='700';if(op.italic)s.style.fontStyle='italic';s.style.color=op.css;s.title='Drag to move this text — tap to edit it';s.addEventListener('pointerdown',e=>peDragEditText(e,op,s));d._movtext=s}
+    else if(op.type==='text'){d.className='pe-optext';d.style.left=(op.fx*100)+'%';d.style.top=((op.fBase+dy)*100)+'%';d.style.fontSize=(op.size*sx)+'px';d.style.color=op.css;if(op.bold)d.style.fontWeight='700';d.textContent=op.text;peWireObject(d,i,null)}
+    else if(op.type==='image'){d.className='pe-opimg';const img=document.createElement('img');img.src=op.url;img.alt=op.sign?'Your signature':'Added image';d.appendChild(img);d.style.left=(op.fx*100)+'%';d.style.top=((op.fy+dy)*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';const h=document.createElement('div');h.className='pe-handle';h.title='Drag to resize';d.appendChild(h);peWireObject(d,i,null);peWireHandle(h,d,i)}
+    else if(op.type==='mark'){d.className='pe-opmark';const col=op.style==='highlight'?PE_HL_COLORS[op.color]:[PE_TXT_COLORS[0],PE_TXT_COLORS[3],PE_TXT_COLORS[1]][op.color];if(op.style==='highlight'){d.style.background=col.css}else{const ln=document.createElement('div');ln.className='pe-markline '+(op.style==='strike'?'strike':'under');ln.style.background=col.css;d.appendChild(ln)}d.style.left=(op.fx*100)+'%';d.style.top=((op.fy+dy)*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';peWireObject(d,i,null)}
+    else if(op.type==='cover'){d.className='pe-cover';d.style.background='rgb('+op.cover.map(v=>Math.round(v*255)).join(',')+')';d.style.left=(op.fx*100)+'%';d.style.top=((op.fy+dy)*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';peWireObject(d,i,null)}
+    else if(op.type==='form'){d.className='pe-formfield';d.style.left=(op.fx*100)+'%';d.style.top=((op.fy+dy)*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';const lb=document.createElement('span');lb.className='pe-formlabel';lb.textContent=(op.kind==='check'?'Checkbox · ':'Text field · ')+(op.name||'Field');d.appendChild(lb);const h=document.createElement('div');h.className='pe-handle';h.title='Drag to resize';d.appendChild(h);peWireObject(d,i,null);peWireHandle(h,d,i)}
+    else if(op.type==='link'){d.className='pe-linkbox';d.style.left=(op.fx*100)+'%';d.style.top=((op.fy+dy)*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';d.title='Link to '+(op.url||'');peWireObject(d,i,null)}
+    else if(op.type==='stamp'){const st=PE_STAMPS[op.preset];d.className='pe-stamp';d.style.left=(op.fx*100)+'%';d.style.top=((op.fy+dy)*100)+'%';d.style.width=(op.fw*100)+'%';d.style.height=(op.fh*100)+'%';d.style.color=st.css;d.style.borderColor=st.css;d.style.fontSize=((op.fs0*(op.fw/op.fw0))*sx)+'px';d.textContent=st.text;const h=document.createElement('div');h.className='pe-handle';h.title='Drag to resize';d.appendChild(h);peWireObject(d,i,null);peWireHandle(h,d,i)}
+    else if(op.type==='shape'||op.type==='draw'){const bb=peOpBBox(op);d.className='pe-hit';d.style.left=(bb.fx*100)+'%';d.style.top=((bb.fy+dy)*100)+'%';d.style.width=(bb.fw*100)+'%';d.style.height=(bb.fh*100)+'%';const node=svg.querySelector('[data-op="'+i+'"]');peWireObject(d,i,node)}
     else return;
     if(op.type!=='edit'&&pe.sel===i)d.classList.add('sel');
     ov.appendChild(d);if(d._movtext)ov.appendChild(d._movtext)});
   /* Floating actions for the selected object (Sejda/Smallpdf pattern). */
   if(pe.sel>=0&&pe.ops[pe.sel]&&pe.ops[pe.sel].page===pe.page&&pe.ops[pe.sel].type!=='edit'){
     const op=pe.ops[pe.sel];const bb=peOpBBox(op);const bar=document.createElement('div');bar.className='pe-actions';
-    const above=bb.fy>.09;bar.style.left=Math.min(92,Math.max(0,bb.fx*100))+'%';bar.style.top=(above?(bb.fy*100-6.5):(bb.fy+bb.fh)*100+1.2)+'%';if(above)bar.style.transform='translateY(-100%)';
+    const above=bb.fy>.09;bar.style.left=Math.min(92,Math.max(0,bb.fx*100))+'%';bar.style.top=(above?((bb.fy+dy)*100-6.5):((bb.fy+dy+bb.fh)*100+1.2))+'%';if(above)bar.style.transform='translateY(-100%)';
     const dup=document.createElement('button');dup.type='button';dup.innerHTML=icon('layers',14)+' Duplicate';dup.addEventListener('pointerdown',e=>e.stopPropagation());dup.addEventListener('click',e=>{e.stopPropagation();peDuplicate(pe.sel)});
     const del=document.createElement('button');del.type='button';del.innerHTML=icon('trash-2',14)+' Delete';del.addEventListener('pointerdown',e=>e.stopPropagation());del.addEventListener('click',e=>{e.stopPropagation();if(!pe)return;pe.ops.splice(pe.sel,1);pe.redo=[];pe.sel=-1;peDrawOverlay();peSyncCount()});
     const fwd=document.createElement('button');fwd.type='button';fwd.innerHTML=icon('arrow-up',14)+' Front';fwd.addEventListener('pointerdown',e=>e.stopPropagation());fwd.addEventListener('click',e=>{e.stopPropagation();if(!pe||pe.sel<0)return;const ix=pe.sel;const mv=pe.ops.splice(ix,1)[0];pe.ops.push(mv);pe.sel=pe.ops.length-1;pe.redo=[];peDrawOverlay();peSyncCount()});
@@ -1110,9 +1132,9 @@ function peDrawOverlay(){
       const rep=document.createElement('button');rep.type='button';rep.innerHTML=icon('image-plus',14)+' Replace…';rep.addEventListener('pointerdown',e=>e.stopPropagation());rep.addEventListener('click',e=>{e.stopPropagation();const inp=$('peImgRepFile');if(inp)inp.click()});
       const dn=document.createElement('button');dn.type='button';dn.innerHTML=icon('x',14)+' Done';dn.addEventListener('pointerdown',e=>e.stopPropagation());dn.addEventListener('click',e=>{e.stopPropagation();pe.imgSel=-1;peDrawOverlay()});
       bar.appendChild(cov);bar.appendChild(mv);bar.appendChild(rep);bar.appendChild(dn);ov.appendChild(bar)}}
-  if(pe.mode==='edit'&&pe.hasText){pe.lines.forEach((l,li)=>{const h=document.createElement('div');h.className='pe-line'+(pe.editLine===li?' sel':'');h.style.left=(l.fx*100)+'%';h.style.top=(l.fTop*100)+'%';h.style.width=(l.fw*100)+'%';h.style.height=(l.fh*100)+'%';h.title='Tap to edit this field — or drag it to a new place';
+  if(pe.mode==='edit'&&pe.hasText){pe.lines.forEach((l,li)=>{const h=document.createElement('div');h.className='pe-line'+(pe.editLine===li?' sel':'');h.style.left=(l.fx*100)+'%';h.style.top=((l.iTop!==undefined?l.iTop:l.fTop)*100)+'%';h.style.width=(l.fw*100)+'%';h.style.height=(((l.iBot!==undefined?l.iBot:l.fTop+l.fh)-(l.iTop!==undefined?l.iTop:l.fTop))*100)+'%';h.title='Tap to edit this field — or drag it to a new place';
     h.addEventListener('pointerdown',e=>{e.stopPropagation();const start=peFrac(e);let moved=false;try{h.setPointerCapture(e.pointerId)}catch(_){}
-      const move=ev=>{const p=peFrac(ev);if(!moved&&Math.hypot(p.fx-start.fx,p.fy-start.fy)>.006)moved=true;if(moved){h.style.left=((l.fx+(p.fx-start.fx))*100)+'%';h.style.top=((l.fTop+(p.fy-start.fy))*100)+'%'}};
+      const move=ev=>{const p=peFrac(ev);if(!moved&&Math.hypot(p.fx-start.fx,p.fy-start.fy)>.006)moved=true;if(moved){h.style.left=((l.fx+(p.fx-start.fx))*100)+'%';h.style.top=(((l.iTop!==undefined?l.iTop:l.fTop)+(p.fy-start.fy))*100)+'%'}};
       const up=ev=>{h.removeEventListener('pointermove',move);h.removeEventListener('pointerup',up);h.removeEventListener('pointercancel',up);if(!moved){peSelectLine(li);return}const p=peFrac(ev);peMoveLine(li,p.fx-start.fx,p.fy-start.fy)};
       h.addEventListener('pointermove',move);h.addEventListener('pointerup',up);h.addEventListener('pointercancel',up)});ov.appendChild(h)})}
   if(nbEls)nbEls.forEach(n=>ov.appendChild(n));
@@ -1172,10 +1194,10 @@ function peWireObject(d,i,linked){
     const start=peFrac(e);const orig=JSON.parse(JSON.stringify(op));const bb0=peOpBBox(op);
     try{d.setPointerCapture(e.pointerId)}catch(_){}
     const move=ev=>{const p=peFrac(ev);const dx=p.fx-start.fx,dy=p.fy-start.fy;
-      if(op.type==='text'){op.fx=Math.min(1,Math.max(0,orig.fx+dx));op.fBase=Math.min(1,Math.max(.02,orig.fBase+dy));d.style.left=(op.fx*100)+'%';d.style.top=(op.fBase*100)+'%'}
-      else if(op.type==='draw'){d.style.left=((bb0.fx+dx)*100)+'%';d.style.top=((bb0.fy+dy)*100)+'%';if(linked)linked.style.transform=`translate(${dx*1000}px,${dy*1000}px)`}
-      else if(op.type==='shape'&&orig.fx2!==undefined){op.fx=orig.fx+dx;op.fy=orig.fy+dy;op.fx2=orig.fx2+dx;op.fy2=orig.fy2+dy;d.style.left=((bb0.fx+dx)*100)+'%';d.style.top=((bb0.fy+dy)*100)+'%';if(linked)linked.style.transform=`translate(${dx*1000}px,${dy*1000}px)`}
-      else{op.fx=Math.min(1-op.fw,Math.max(0,orig.fx+dx));op.fy=Math.min(1-op.fh,Math.max(0,orig.fy+dy));d.style.left=(op.fx*100)+'%';d.style.top=(op.fy*100)+'%';if(linked)linked.style.transform=`translate(${dx*1000}px,${dy*1000}px)`}};
+      if(op.type==='text'){op.fx=Math.min(1,Math.max(0,orig.fx+dx));op.fBase=Math.min(1,Math.max(.02,orig.fBase+dy));d.style.left=(op.fx*100)+'%';d.style.top=((op.fBase+(pe.pageDy||0))*100)+'%'}
+      else if(op.type==='draw'){d.style.left=((bb0.fx+dx)*100)+'%';d.style.top=((bb0.fy+(pe.pageDy||0)+dy)*100)+'%';if(linked)linked.style.transform=`translate(${dx*1000}px,${dy*1000}px)`}
+      else if(op.type==='shape'&&orig.fx2!==undefined){op.fx=orig.fx+dx;op.fy=orig.fy+dy;op.fx2=orig.fx2+dx;op.fy2=orig.fy2+dy;d.style.left=((bb0.fx+dx)*100)+'%';d.style.top=((bb0.fy+(pe.pageDy||0)+dy)*100)+'%';if(linked)linked.style.transform=`translate(${dx*1000}px,${dy*1000}px)`}
+      else{op.fx=Math.min(1-op.fw,Math.max(0,orig.fx+dx));op.fy=Math.min(1-op.fh,Math.max(0,orig.fy+dy));d.style.left=(op.fx*100)+'%';d.style.top=((op.fy+(pe.pageDy||0))*100)+'%';if(linked)linked.style.transform=`translate(${dx*1000}px,${dy*1000}px)`}};
     const up=ev=>{d.removeEventListener('pointermove',move);d.removeEventListener('pointerup',up);d.removeEventListener('pointercancel',up);
       if(op.type==='draw'){const p=peFrac(ev);const dx=p.fx-start.fx,dy=p.fy-start.fy;op.points=orig.points.map(pt=>[Math.min(1,Math.max(0,pt[0]+dx)),Math.min(1,Math.max(0,pt[1]+dy))])}
       if(linked)linked.style.transform='';peDrawOverlay()};
@@ -1245,7 +1267,7 @@ function pePlaceForm(p){if(!pe)return;const n=pe.ops.filter(o=>o.type==='form').
    will use; the box's CSS top is derived from it exactly like the
    .pe-opmovtext rendering (top = fBase*stageH - size*sx*.84). */
 function peTextMetrics(){const cvs=$('peCanvas');const stageH=cvs?cvs.clientHeight:1;const sx=pe&&pe.pageW&&cvs?cvs.clientWidth/pe.pageW:1;return{stageH,sizePx:(pe?pe.txt.size:12)*sx}}
-function peLayoutTextBox(){if(!pe||!pe.newBox)return;const nb=pe.newBox;const m=peTextMetrics();nb.el.style.left=(nb.fx*100)+'%';nb.el.style.top=(nb.fBase*m.stageH-(m.sizePx*.84+3))+'px';nb.bar.style.left=nb.el.style.left;nb.bar.style.top=nb.el.style.top;nb.bar.style.transform='translateY(-118%)'}
+function peLayoutTextBox(){if(!pe||!pe.newBox)return;const nb=pe.newBox;const m=peTextMetrics();nb.el.style.left=(nb.fx*100)+'%';nb.el.style.top=((nb.fBase+(pe.pageDy||0))*m.stageH-(m.sizePx*.84+3))+'px';nb.bar.style.left=nb.el.style.left;nb.bar.style.top=nb.el.style.top;nb.bar.style.transform='translateY(-118%)'}
 function peOpenTextBox(p){if(!pe)return;if(pe.newBox)peCommitTextBox();const ov=$('peOverlay');if(!ov)return;
   const col=pe.txt.custCss?{css:pe.txt.custCss,rgb:pe.txt.custRgb}:PE_TXT_COLORS[pe.txt.color];const m=peTextMetrics();
   const box=document.createElement('div');box.className='pe-newbox';box.style.fontSize=m.sizePx+'px';box.style.color=col.css;if(pe.txt.bold)box.style.fontWeight='700';
