@@ -7,7 +7,9 @@
 .pe-newbar button{min-height:36px;padding:0 14px;border-radius:var(--r-pill);border:1px solid var(--accent);background:var(--accent);color:#fff;font-weight:700;font-size:var(--fs-2);cursor:pointer;box-shadow:var(--shadow)}
 .pe-formfield{position:absolute;border:1.5px dashed var(--accent);background:rgba(26,54,93,.07);border-radius:4px;touch-action:none;cursor:grab}
 .pe-formlabel{position:absolute;left:4px;top:2px;font-size:9px;font-weight:700;letter-spacing:.04em;color:var(--accent);pointer-events:none;white-space:nowrap}
-.pe-linkbox{position:absolute;border:1.5px dashed #2f6fd0;background:rgba(47,111,208,.13);border-radius:4px;touch-action:none;cursor:grab}/* ===== Animated demo player (v4.7.17) — not a video: CSS scenes in a player window ===== */
+.pe-linkbox{position:absolute;border:1.5px dashed #2f6fd0;background:rgba(47,111,208,.13);border-radius:4px;touch-action:none;cursor:grab}
+#peOverlay.pe-pass>*{pointer-events:none}
+#peOverlay.pe-pass .pe-actions{pointer-events:auto}/* ===== Animated demo player (v4.7.17) — not a video: CSS scenes in a player window ===== */
 .demo-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}.demo-title-row h1,.demo-title-row h2{margin:0!important}.demo-watch-btn{display:inline-flex;align-items:center;gap:8px;background:var(--glass2,rgba(255,255,255,.42));border:1px solid var(--accent3,#c5a059);color:var(--ink,#13233c);border-radius:999px;padding:8px 16px;font-weight:600;font-size:13.5px;cursor:pointer;flex:none}.demo-watch-btn:hover{border-color:var(--accent,#1a365d)}
 .demo-overlay{position:fixed;inset:0;z-index:2000;background:rgba(7,13,26,.74);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}
 .demo-window{width:min(680px,100%);background:#0d1b31;border:1px solid rgba(197,160,89,.35);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.5);color:#f3ead8;overflow:hidden;animation:dWinIn .35s cubic-bezier(.22,1.2,.36,1) both}

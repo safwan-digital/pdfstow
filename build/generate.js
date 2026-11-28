@@ -47,7 +47,7 @@ function subHead(html, { title, desc, url, bodyAttr, jsonld }) {
   h = h.replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${escA(desc)}">`);
   h = h.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
   if (jsonld) h = h.replace('<!-- The manifest link', `<script type="application/ld+json">\n${jsonld}\n</script>\n<!-- The manifest link`);
-  h = h.replace('href="styles.css?v=71"', 'href="/styles.css?v=71"');
+  h = h.replace('href="styles.css?v=72"', 'href="/styles.css?v=72"');
   h = h.replace('href="favicon.ico"', 'href="/favicon.ico"');
   h = h.replace('href="favicon-32.png"', 'href="/favicon-32.png"');
   h = h.replace('href="apple-touch-icon.png"', 'href="/apple-touch-icon.png"');
@@ -111,7 +111,7 @@ ${faqs}
     <div class="relrow">${rel}</div>
   </section>
 </main>`;
-  const page = [head, `<body data-tool="${t.id}">`, sprite, subHeader, main, footer, toast, '<script src="/app.js?v=72" defer></script><script src="/demo.js?v=5" defer></script>', '</body></html>', ''].join('\n');
+  const page = [head, `<body data-tool="${t.id}">`, sprite, subHeader, main, footer, toast, '<script src="/app.js?v=73" defer></script><script src="/demo.js?v=5" defer></script>', '</body></html>', ''].join('\n');
   const dir = path.join(ROOT, t.slug);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), page);
@@ -155,7 +155,7 @@ function trustHead(title, desc, slug) {
 ${ldjson({ '@context': 'https://schema.org', '@type': 'WebPage', name: title, description: desc, url: `${BASE}/${slug}/`, isPartOf: { '@type': 'WebSite', name: 'PDFStow', url: BASE + '/' }, publisher: { '@type': 'Organization', name: 'Safwan.Digital', url: 'https://safwan.digital', logo: `${BASE}/icon-512.png` } })}
 </script>
 <script>try{if(/^https?:$/.test(location.protocol)&&/\\/index\\.html$/.test(location.pathname)){history.replaceState(null,'',location.pathname.replace(/\\/index\\.html$/,'/')+location.search+location.hash)}}catch(e){}try{localStorage.removeItem('aurelia-palette');var _t=localStorage.getItem('aurelia-theme');if(_t==='dark'||(_t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.dataset.theme='dark'}catch(e){}</script>
-<link rel="stylesheet" href="/styles.css?v=71">
+<link rel="stylesheet" href="/styles.css?v=72">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
